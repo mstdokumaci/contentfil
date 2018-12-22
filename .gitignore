@@ -1,0 +1,9 @@
+dist/*
+!dist/index.html
+!dist/assets
+dist/assets/*
+!dist/assets/css
+node_modules
+.npm
+.idea
+.vscode
