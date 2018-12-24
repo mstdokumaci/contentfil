@@ -41,6 +41,10 @@ let config = {
     format: 'umd',
     sourcemap: true
   },
+  external: [
+    'crypto',
+    'vue2-medium-editor'
+  ],
   plugins: plugins
 }
 
