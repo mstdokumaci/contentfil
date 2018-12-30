@@ -1,6 +1,6 @@
 <template>
   <div class="app" id="app">
-    <content-editor :content='content' :options='options' />
+    <content-editor :onChange="onChange" :options='options' />
   </div>
 </template>
 
@@ -11,11 +11,24 @@
     name: 'app',
     data() {
       return {
-        content: "",
-        options: {
-
-        }
+        options: {}
       }
+    },
+    methods: {
+      onChange(content) {
+        clearTimeout(this.updateTimer)
+        this.updateTimer = setTimeout(
+          () => this.$client.get('content').emit('update', content),
+          200
+        )
+      }
+    },
+    created () {
+      this.$client.on('connected', val => {
+        if (val) {
+          this.$client.switchBranch('A')
+        }
+      })
     },
     components: { Editor }
   }
@@ -30,7 +43,8 @@ body {
 
 .app {
     color: #444;
-    max-width: 600px;
+    width: 700px;
+    margin: auto;
     font-family: Helvetica, sans-serif;
     display: flex;
 }
