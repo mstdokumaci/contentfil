@@ -18,7 +18,7 @@
       onChange(content) {
         clearTimeout(this.updateTimer)
         this.updateTimer = setTimeout(
-          () => this.$client.get('content').emit('update', content),
+          () => this.$client.get('content').set(content),
           200
         )
       }

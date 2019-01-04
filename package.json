@@ -12,7 +12,7 @@
     "client": "cross-env NODE_ENV=development rollup -cw"
   },
   "dependencies": {
-    "stx": "latest",
+    "stx": "^0.4.8",
     "vue": "^2.5.13",
     "vue2-content-editor": "git+https://github.com/tui2tone/vue2-medium-editor.git"
   },
