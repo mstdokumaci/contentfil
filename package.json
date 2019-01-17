@@ -13,8 +13,9 @@
   },
   "dependencies": {
     "stx": "^0.4.8",
-    "vue": "^2.5.13",
-    "vue2-content-editor": "git+https://github.com/tui2tone/vue2-medium-editor.git"
+    "tiptap": "^1.7.0",
+    "tiptap-extensions": "^1.7.0",
+    "vue": "^2.5.13"
   },
   "devDependencies": {
     "autoprefixer": "^8.0.0",

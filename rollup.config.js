@@ -42,8 +42,6 @@ let config = {
     sourcemap: true
   },
   external: [
-    'crypto',
-    'vue2-medium-editor'
   ],
   plugins: plugins
 }

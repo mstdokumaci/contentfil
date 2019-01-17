@@ -2,7 +2,11 @@ const { create } = require('stx')
 
 const sMaster = create({
   route: {},
-  content: ''
+  content: '',
+  draft: {
+  },
+  published: {
+  }
 })
 
 sMaster.branch.newBranchMiddleware = newBranch => {
