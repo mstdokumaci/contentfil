@@ -15,7 +15,8 @@
     "stx": "^0.4.8",
     "tiptap": "^1.7.0",
     "tiptap-extensions": "^1.7.0",
-    "vue": "^2.5.13"
+    "vue": "^2.5.13",
+    "vue-router": "^3.0.2"
   },
   "devDependencies": {
     "autoprefixer": "^8.0.0",

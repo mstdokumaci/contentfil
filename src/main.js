@@ -1,8 +1,11 @@
-import Vue from 'vue';
-import App from './App.vue';
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+
+import App from './App.vue'
 import client from './client'
 
-Vue.config.productionTip = false;
+Vue.config.productionTip = false
+Vue.use(VueRouter)
 
 Object.defineProperty(
   Vue.prototype,
@@ -13,6 +16,7 @@ Object.defineProperty(
   }
 )
 
+
 const app = new Vue({
   render: h => h(App)
-}).$mount('#app');
+}).$mount('#app')
