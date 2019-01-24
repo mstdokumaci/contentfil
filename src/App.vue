@@ -1,5 +1,5 @@
 <template>
-  <router-view></router-view>
+  <router-view :user="user"></router-view>
 </template>
 
 <script>
@@ -23,6 +23,54 @@ const router = new VueRouter({
 
 export default {
   name: 'app',
+  data() {
+    return {
+      anonymousId: 0,
+      user: {}
+    }
+  },
+  created() {
+    const anonymousId = window.localStorage.getItem('anonymousId')
+    if (anonymousId) {
+      this.anonymousId = anonymousId
+    } else {
+      this.anonymousId = Math.round(Math.random() * 9999999999)
+      window.localStorage.setItem('anonymousId', this.anonymousId)
+    }
+
+    let user = window.localStorage.getItem('user')
+    if (user) {
+      user = JSON.parse(user)
+      if (user.tokenExpiresAt && tokenExpiresAt > Date.now() + 30 * 1000) {
+        this.user = user
+      }
+    }
+
+    this.$client.on('connected', isConnected => {
+      if (isConnected) {
+        if (this.user.email && this.user.token) {
+          this.$client.switchBranch(JSON.stringify({
+            type: 'token',
+            email: this.user.email,
+            token: this.user.token
+          }))
+        } else {
+          this.$client.switchBranch(JSON.stringify({
+            type: 'anonymous',
+            id: this.anonymousId
+          }))
+        }
+      }
+    })
+
+    this.$client.get('user', {}).subscribe(user => {
+      if (user.get('type')) {
+        user = user.serialize()
+        window.localStorage.setItem('user', JSON.stringify(user))
+        this.user = user
+      }
+    })
+  },
   router
 }
 </script>

@@ -12,9 +12,7 @@ const createUser = ({ email, password }, _, branchUser) => {
   auth.set({
     [ email ]: {
       salt,
-      hash,
-      token,
-      tokenExpiresAt: Date.now() + 86400 * 1000 * 10
+      hash
     }
   })
   branchUser.emit('created')
@@ -91,6 +89,7 @@ contentfil.branch.newBranchMiddleware = newBranch => {
 
 const server = contentfil.listen(7071)
 server.switchBranch = (_, branchKey, switcher) => {
+  let authRequest
   try {
     authRequest = JSON.parse(branchKey)
   } catch (e) {
@@ -102,7 +101,10 @@ server.switchBranch = (_, branchKey, switcher) => {
     authRequest.type === 'anonymous'
     && authRequest.id
   ) {
-    switcher(authRequest.id)
+    switcher(authRequest.id).get('user').set({
+      type: 'anonymous',
+      id: authRequest.id
+    })
   } else if (
     authRequest.type === 'token'
     && authRequest.email

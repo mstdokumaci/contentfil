@@ -1,5 +1,5 @@
 <template>
-    <router-link to="/profile">My Profile</router-link>
+    <router-link to="/me">My Profile</router-link>
 </template>
 
 <script>
