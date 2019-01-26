@@ -1,5 +1,5 @@
 <template>
-  <router-view :user="user"></router-view>
+  <router-view :user="user" :anonymous-id="anonymousId"></router-view>
 </template>
 
 <script>
@@ -41,7 +41,7 @@ export default {
     let user = window.localStorage.getItem('user')
     if (user) {
       user = JSON.parse(user)
-      if (user.tokenExpiresAt && tokenExpiresAt > Date.now() + 30 * 1000) {
+      if (user.tokenExpiresAt && user.tokenExpiresAt > Date.now() + 30 * 1000) {
         this.user = user
       }
     }
@@ -63,11 +63,17 @@ export default {
       }
     })
 
-    this.$client.get('user', {}).subscribe(user => {
-      if (user.get('type')) {
+    this.$client.get('user', { type: 'none' }).subscribe(user => {
+      if (user.get('type').compute() !== 'none') {
         user = user.serialize()
-        window.localStorage.setItem('user', JSON.stringify(user))
         this.user = user
+        if (user.tokenExpiresAt) {
+          window.localStorage.setItem('user', JSON.stringify({
+            email: user.email,
+            token: user.token,
+            tokenExpiresAt: user.tokenExpiresAt
+          }))
+        }
       }
     })
   },

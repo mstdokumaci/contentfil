@@ -1,6 +1,9 @@
 <template>
   <div>
     <div>
+      <span style="color:red">{{this.error}}</span>
+    </div>
+    <div>
       <label for="email">E-mail</label>
       <input type="text" id="email" v-model="email" />
     </div>
@@ -20,7 +23,8 @@ export default {
   data() {
     return {
       email: '',
-      password: ''
+      password: '',
+      error: ''
     }
   },
   props: [ 'user' ],
@@ -33,7 +37,27 @@ export default {
   },
   methods: {
     login() {
+      if (this.email.length < 5) {
+        this.error = 'Minimum email length is 5'
+      } else {
+        this.error = ''
 
+        const listener = this.$client
+          .get([ 'user', 'status' ], {})
+          .on((_, stamp, status) => {
+            status = status.compute()
+            if (status === 'error') {
+              this.error = 'Server error'
+              listener.off()
+            }
+          })
+
+        this.$client.switchBranch(JSON.stringify({
+          type: 'password',
+          email: this.email,
+          password: this.password
+        }))
+      }
     }
   },
   created() {

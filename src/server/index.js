@@ -1,8 +1,24 @@
 const { create } = require('stx')
+const crypto = require('crypto')
 
 const auth = create()
 
-const createUser = ({ email, password }, _, branchUser) => {
+setErrorStatus = user => {
+  if (user.get('type') !== void 0) {
+    user.set({ status: 'error' })
+  }
+}
+
+const createUser = (user, _, branchUser) => {
+  try {
+    user = JSON.parse(user)
+  } catch (e) {
+    return setErrorStatus(branchUser)
+  }
+  const { email, password } = user
+  if (auth.get(email) !== void 0) {
+    return setErrorStatus(branchUser)
+  }
   let salt = Buffer.from(Array(64).fill().map(() => Math.random() * 255))
   const hash = crypto.scryptSync(password, salt, 64).toString('base64')
   salt = salt.toString('base64')
@@ -15,7 +31,7 @@ const createUser = ({ email, password }, _, branchUser) => {
       hash
     }
   })
-  branchUser.emit('created')
+  branchUser.set({ status: 'created' })
 }
 
 const authByPassword = (email, password, switcher) => {
@@ -44,8 +60,9 @@ const authByPassword = (email, password, switcher) => {
         type: 'real',
         email,
         token,
-        tokenExpiresAt: tokenExpiresAt.compute()
+        tokenExpiresAt: user.get('tokenExpiresAt').compute()
       })
+      return true
     }
   }
 }
@@ -65,14 +82,13 @@ const authByToken = (email, token, switcher) => {
         token,
         tokenExpiresAt: tokenExpiresAt.compute()
       })
+      return true
     }
   }
 }
 
 const contentfil = create({
-  user: {
-    type: 'anonymous'
-  },
+  user : {},
   route: {},
   draft: {},
   published: {}
@@ -88,15 +104,16 @@ contentfil.branch.newBranchMiddleware = newBranch => {
 }
 
 const server = contentfil.listen(7071)
-server.switchBranch = (_, branchKey, switcher) => {
+server.switchBranch = (fromBranch, branchKey, switcher) => {
   let authRequest
+  const branchUser = fromBranch.get('user')
   try {
     authRequest = JSON.parse(branchKey)
   } catch (e) {
-    return
+    return setErrorStatus(branchUser)
   }
   if (!authRequest.type) {
-    return
+    setErrorStatus(branchUser)
   } else if (
     authRequest.type === 'anonymous'
     && authRequest.id
@@ -110,12 +127,18 @@ server.switchBranch = (_, branchKey, switcher) => {
     && authRequest.email
     && authRequest.token
   ) {
-    authByToken(authRequest.email, authRequest.token, switcher)
+    if (!authByToken(authRequest.email, authRequest.token, switcher)) {
+      setErrorStatus(branchUser)
+    }
   } else if (
     authRequest.type === 'password'
     && authRequest.email
     && authRequest.password
   ) {
-    authByPassword(authRequest.email, authRequest.password, switcher)
+    if (!authByPassword(authRequest.email, authRequest.password, switcher)) {
+      setErrorStatus(branchUser)
+    }
+  } else {
+    setErrorStatus(branchUser)
   }
 }
