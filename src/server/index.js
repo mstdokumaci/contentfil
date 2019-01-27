@@ -89,7 +89,7 @@ const authByToken = (email, token, switcher) => {
 
 const contentfil = create({
   user : {},
-  route: {},
+  route: '',
   draft: {},
   published: {}
 })

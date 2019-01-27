@@ -4,6 +4,7 @@
 
 <script>
 import VueRouter from 'vue-router'
+import client from './client'
 import Home from './components/Home.vue';
 import Login from './components/Login.vue';
 import Signup from './components/Signup.vue';
@@ -19,6 +20,20 @@ const router = new VueRouter({
     { path: '/me', component: Profile },
     { path: '/editor', component: Editor },
   ]
+})
+
+const route = client.get('route', '')
+
+route.subscribe(to => {
+  to = to.compute()
+  if (to !== '') {
+    router.push(to)
+  }
+})
+
+router.beforeEach((to, _, next) => {
+  route.set(to.fullPath)
+  next()
 })
 
 export default {

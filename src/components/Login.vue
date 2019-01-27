@@ -1,6 +1,10 @@
 <template>
   <div>
     <div>
+      <router-link to="/">Home</router-link>
+      <router-link to="/signup">Sign up</router-link>
+    </div>
+    <div>
       <span style="color:red">{{this.error}}</span>
     </div>
     <div>
@@ -13,7 +17,6 @@
     </div>
     <div>
       <button @click="login">Login</button>
-      <router-link to="/signup">Sign up</router-link>
     </div>
   </div>
 </template>

@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div>
+      <router-link to="/">Home</router-link>
+    </div>
     <span>{{user.email}}</span>
     <button @click="logout">Logout</button>
   </div>
