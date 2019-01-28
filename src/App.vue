@@ -41,7 +41,8 @@ export default {
   data() {
     return {
       anonymousId: 0,
-      user: {}
+      user: {},
+      timeout: null
     }
   },
   created() {
@@ -69,6 +70,12 @@ export default {
             email: this.user.email,
             token: this.user.token
           }))
+          this.timeout = setTimeout(() => {
+            this.$client.switchBranch(JSON.stringify({
+              type: 'anonymous',
+              id: this.anonymousId
+            }))
+          }, 1000)
         } else {
           this.$client.switchBranch(JSON.stringify({
             type: 'anonymous',
@@ -83,6 +90,10 @@ export default {
         user = user.serialize()
         this.user = user
         if (user.tokenExpiresAt) {
+          if (this.timeout) {
+            clearTimeout(this.timeout)
+            this.timeout = null
+          }
           window.localStorage.setItem('user', JSON.stringify({
             email: user.email,
             token: user.token,

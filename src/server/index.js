@@ -19,15 +19,11 @@ const createUser = (user, _, branchUser) => {
   if (auth.get(email) !== void 0) {
     return setErrorStatus(branchUser)
   }
-  let salt = Buffer.from(Array(64).fill().map(() => Math.random() * 255))
+  const salt = crypto.randomBytes(64)
   const hash = crypto.scryptSync(password, salt, 64).toString('base64')
-  salt = salt.toString('base64')
-  token = Buffer.from(
-    Array(64).fill().map(() => Math.random() * 255)
-  ).toString('base64')
   auth.set({
     [ email ]: {
-      salt,
+      salt: salt.toString('base64'),
       hash
     }
   })
@@ -48,9 +44,7 @@ const authByPassword = (email, password, switcher) => {
       ) {
         token = user.get('token').compute()
       } else {
-        token = Buffer.from(
-          Array(64).fill().map(() => Math.random() * 255)
-        ).toString('base64')
+        token = crypto.randomBytes(64).toString('base64')
         user.set({
           token,
           tokenExpiresAt: Date.now() + 86400 * 1000 * 10
@@ -87,11 +81,25 @@ const authByToken = (email, token, switcher) => {
   }
 }
 
+const createDraft = () => {
+  const timeBuf = Buffer.allocUnsafe(4)
+  timeBuf.writeUInt32BE((Date.now() & 0xffffffff) >>> 0, 0)
+  const id = Buffer.concat([
+      crypto.randomBytes(12),
+      timeBuf
+  ])
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '')
+}
+
 const contentfil = create({
   user : {},
   route: '',
   draft: {},
-  published: {}
+  published: {},
+  mine_published: {}
 })
 
 contentfil.branch.newBranchMiddleware = newBranch => {
