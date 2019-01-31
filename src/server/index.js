@@ -81,32 +81,41 @@ const authByToken = (email, token, switcher) => {
   }
 }
 
-const createDraft = () => {
+const createDraft = (_, __, branchDraft) => {
   const timeBuf = Buffer.allocUnsafe(4)
   timeBuf.writeUInt32BE((Date.now() & 0xffffffff) >>> 0, 0)
   const id = Buffer.concat([
       crypto.randomBytes(12),
       timeBuf
-  ])
-    .toString('base64')
+  ]).toString('base64')
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=+$/, '')
+
+  branchDraft.set({
+    [ id ]: {
+      content: '',
+      published: false
+    }
+  })
 }
 
 const contentfil = create({
   user : {},
   route: '',
   draft: {},
-  published: {},
-  mine_published: {}
+  public: {},
 })
 
 contentfil.branch.newBranchMiddleware = newBranch => {
-  newBranch.get('user').on('createUser', createUser)
+  newBranch.get('user').on('create', createUser)
+  newBranch.get('draft').on('create', createDraft)
   newBranch.branch.clientCanUpdate = [
     {
       path: ['route']
+    },
+    {
+      path: [ 'draft', '*', 'content' ]
     }
   ]
 }

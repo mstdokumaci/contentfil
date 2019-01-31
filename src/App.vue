@@ -18,7 +18,11 @@ const router = new VueRouter({
     { path: '/login', component: Login },
     { path: '/signup', component: Signup },
     { path: '/me', component: Profile },
-    { path: '/editor', component: Editor },
+    {
+      path: '/draft/:id',
+      component: Editor,
+      props: true
+    },
   ]
 })
 

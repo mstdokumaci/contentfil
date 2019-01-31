@@ -72,7 +72,7 @@ export default {
           }
         })
 
-        user.emit('createUser', JSON.stringify({
+        user.emit('create', JSON.stringify({
           email: this.email,
           password: this.password
         }))
