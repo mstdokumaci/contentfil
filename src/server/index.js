@@ -98,6 +98,7 @@ const createDraft = (_, __, branchDraft) => {
       published: false
     }
   })
+  branchDraft.root().get('route').set(`/draft/${id}`)
 }
 
 const contentfil = create({

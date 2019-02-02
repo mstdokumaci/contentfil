@@ -10,14 +10,24 @@
     <div>
       <button @click="newStory">New Story</button>
     </div>
+    <ul>
+      <li v-for="item in list" :key="item.key">
+        <router-link :to="`/draft/${item.key}`">
+          {{item.key}}
+        </router-link>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
+let subscription
+
 export default {
   data() {
     return {
-      draft: {}
+      list: [],
+      subscription: null
     }
   },
   props: [ 'user', 'anonymousId' ],
@@ -37,10 +47,6 @@ export default {
       window.localStorage.removeItem('user')
     },
     newStory() {
-      this.$once('new', id => {
-        this.$router.push(`/draft/${id}`)
-      })
-
       this.$client.get('draft').emit('create')
     }
   },
@@ -48,15 +54,15 @@ export default {
     if (this.user.type !== 'real') {
       return this.$router.replace('/login')
     }
-    
-    this.$client.get('draft', {}).subscribe({ depth: 2 }, draft => {
-      draft.forEach((_, id) => {
-        if (!this.draft[id]) {
-          this.$emit('new', id)
-          this.draft[id] = {}
-        }
-      })
+
+    subscription = this.$client.get('draft', {}).subscribe(list => {
+      this.list = list.map((item, key) => ({
+        key: key,
+        content: item.get('content').compute(),
+        published: item.get('published').compute()
+      }))
     })
-  }
+  },
+  destroyed: () => subscription && subscription.unsubscribe()
 }
 </script>

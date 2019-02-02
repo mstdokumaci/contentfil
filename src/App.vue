@@ -22,7 +22,7 @@ const router = new VueRouter({
       path: '/draft/:id',
       component: Editor,
       props: true
-    },
+    }
   ]
 })
 
@@ -110,3 +110,45 @@ export default {
   router
 }
 </script>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-touch-callout: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility
+}
+
+:focus {
+    outline: none
+}
+
+:after, :before {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box
+}
+
+html {
+    font-family: -apple-system, BlinkMacSystemFont, San Francisco, Roboto, Segoe UI, Helvetica Neue, sans-serif;
+    font-size: 18px;
+    color: #000;
+    line-height: 1.5
+}
+
+body {
+    margin: 2rem;
+}
+
+a {
+    color: inherit
+}
+</style>
