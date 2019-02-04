@@ -13,7 +13,7 @@
     <ul>
       <li v-for="item in list" :key="item.key">
         <router-link :to="`/draft/${item.key}`">
-          {{item.key}}
+          {{item.title}}
         </router-link>
       </li>
     </ul>
@@ -56,11 +56,15 @@ export default {
     }
 
     subscription = this.$client.get('draft', {}).subscribe(list => {
-      this.list = list.map((item, key) => ({
-        key: key,
-        content: item.get('content').compute(),
-        published: item.get('published').compute()
-      }))
+      this.list = list.map((item, key) => {
+        const el = document.createElement('div')
+        el.innerHTML = item.get('content').compute()
+        return {
+          key: key,
+          title: el.firstChild.textContent,
+          published: item.get('published').compute()
+        }
+      })
     })
   },
   destroyed: () => subscription && subscription.unsubscribe()
