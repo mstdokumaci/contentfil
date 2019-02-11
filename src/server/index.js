@@ -94,23 +94,38 @@ const createDraft = (_, __, branchDraft) => {
 
   branchDraft.set({
     [ id ]: {
-      content: '',
-      published: false
+      content: ''
     }
   })
   branchDraft.root().get('route').set(`/draft/${id}`)
+}
+
+const publishDraft = (id, __, branchDraft) => {
+  const draft = branchDraft.get(id)
+  if (draft == void 0) {
+    return
+  }
+  contentfil.get('published').set({
+    [ id ]: {
+      content: draft.get('content').compute()
+    }
+  })
+  draft.set({
+    published: [ '@', 'published', 'id' ]
+  })
 }
 
 const contentfil = create({
   user : {},
   route: '',
   draft: {},
-  public: {},
+  published: {},
 })
 
 contentfil.branch.newBranchMiddleware = newBranch => {
   newBranch.get('user').on('create', createUser)
   newBranch.get('draft').on('create', createDraft)
+  newBranch.get('draft').on('publish', publishDraft)
   newBranch.branch.clientCanUpdate = [
     {
       path: ['route']
