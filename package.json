@@ -9,7 +9,8 @@
     "build:autoprefixer": "postcss --use autoprefixer -o dist/assets/css/app.css dist/assets/css/app.css",
     "build:cssnano": "cssnano dist/assets/css/app.css dist/assets/css/app.css",
     "server": "node src/server",
-    "client": "cross-env NODE_ENV=development rollup -cw"
+    "client": "cross-env NODE_ENV=development rollup -cw",
+    "dev": "concurrently \"npm:server\" \"npm:client\""
   },
   "dependencies": {
     "stx": "^0.4.8",
@@ -37,6 +38,7 @@
     "rollup-plugin-serve": "^0.4.2",
     "rollup-plugin-uglify": "^3.0.0",
     "rollup-plugin-vue": "^4.3.0",
-    "vue-template-compiler": "^2.5.13"
+    "vue-template-compiler": "^2.5.13",
+    "concurrently": "^4.1.0"
   }
 }
