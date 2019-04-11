@@ -32,7 +32,8 @@ const publishDraft = (id, __, branchDraft) => {
   }
   contentfil.get('published').set({
     [ id ]: {
-      content: draft.get('content').compute()
+      content: draft.get('content').compute(),
+      date: Date.now()
     }
   })
   draft.set({

@@ -73,7 +73,8 @@ import {
   Link,
   Strike,
   Underline,
-  History
+  History,
+  Placeholder
 } from "tiptap-extensions";
 
 let subscription;
@@ -103,7 +104,11 @@ export default {
           new Link(),
           new Strike(),
           new Underline(),
-          new History()
+          new History(),
+          new Placeholder({
+            emptyClass: 'is-empty',
+            emptyNodeText: 'Write something',
+          })
         ],
         content: "",
         onUpdate: ({ getHTML }) => this.onChange(getHTML())
@@ -119,7 +124,7 @@ export default {
     },
     update(content) {
       this.updating = true;
-      this.$client.get(["draft", this.id, "content"], content).set(content);
+      this.$client.get([ 'draft', this.id, 'content' ], content).set(content);
       this.updating = false;
     }
   },
@@ -127,7 +132,7 @@ export default {
     subscription = this.$client
       .get("draft", {})
       .subscribe({ keys: [this.id] }, draft => {
-        const content = draft.get([this.id, "content"]);
+        const content = draft.get([ this.id, 'content' ]);
         if (!this.updating && content !== void 0 && content.compute() !== "") {
           this.editor.setContent(content.compute());
         }
@@ -199,122 +204,6 @@ h3 {
   position: relative;
   max-width: 30rem;
   margin: 0 auto 5rem;
-}
-
-.editor__content pre {
-  padding: 0.7rem 1rem;
-  border-radius: 5px;
-  background: #000;
-  color: #fff;
-  font-size: 0.8rem;
-  overflow-x: auto;
-}
-
-.editor__content pre code {
-  display: block;
-}
-
-.editor__content p code {
-  display: inline-block;
-  padding: 0 0.4rem;
-  border-radius: 5px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  background: rgba(0, 0, 0, 0.1);
-  color: rgba(0, 0, 0, 0.8);
-}
-
-.editor__content ol,
-.editor__content ul {
-  padding-left: 1rem;
-}
-
-.editor__content li > ol,
-.editor__content li > p,
-.editor__content li > ul {
-  margin: 0;
-}
-
-.editor__content a {
-  color: inherit;
-}
-
-.editor__content blockquote {
-  border-left: 3px solid rgba(0, 0, 0, 0.1);
-  color: rgba(0, 0, 0, 0.8);
-  padding-left: 0.8rem;
-  font-style: italic;
-}
-
-.editor__content blockquote p {
-  margin: 0;
-}
-
-.editor__content img {
-  max-width: 100%;
-  border-radius: 3px;
-}
-
-.editor__content table {
-  border-collapse: collapse;
-  table-layout: fixed;
-  width: 100%;
-  margin: 0;
-  overflow: hidden;
-}
-
-.editor__content table td,
-.editor__content table th {
-  min-width: 1em;
-  border: 2px solid #ddd;
-  padding: 3px 5px;
-  vertical-align: top;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  position: relative;
-}
-
-.editor__content table td > *,
-.editor__content table th > * {
-  margin-bottom: 0;
-}
-
-.editor__content table th {
-  font-weight: 700;
-  text-align: left;
-}
-
-.editor__content table .selectedCell:after {
-  z-index: 2;
-  position: absolute;
-  content: "";
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  background: rgba(200, 200, 255, 0.4);
-  pointer-events: none;
-}
-
-.editor__content table .column-resize-handle {
-  position: absolute;
-  right: -2px;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  z-index: 20;
-  background-color: #adf;
-  pointer-events: none;
-}
-
-.editor__content .tableWrapper {
-  margin: 1em 0;
-  overflow-x: auto;
-}
-
-.editor__content .resize-cursor {
-  cursor: ew-resize;
-  cursor: col-resize;
 }
 
 .menubar {
@@ -639,5 +528,132 @@ symbol [d="M0 0h24v24H0z"][data-v-2b9db09d] {
   color: #000;
   border-radius: 5px;
   padding: 0.2rem 0.5rem;
+}
+</style>
+
+<style>
+.editor__content pre {
+  padding: 0.7rem 1rem;
+  border-radius: 5px;
+  background: #000;
+  color: #fff;
+  font-size: 0.8rem;
+  overflow-x: auto;
+}
+
+.editor__content pre code {
+  display: block;
+}
+
+.editor__content p code {
+  display: inline-block;
+  padding: 0 0.4rem;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.editor__content ol,
+.editor__content ul {
+  padding-left: 1rem;
+}
+
+.editor__content li > ol,
+.editor__content li > p,
+.editor__content li > ul {
+  margin: 0;
+}
+
+.editor__content a {
+  color: inherit;
+}
+
+.editor__content blockquote {
+  border-left: 3px solid rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.8);
+  padding-left: 0.8rem;
+  font-style: italic;
+}
+
+.editor__content blockquote p {
+  margin: 0;
+}
+
+.editor__content img {
+  max-width: 100%;
+  border-radius: 3px;
+}
+
+.editor__content table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+.editor__content table td,
+.editor__content table th {
+  min-width: 1em;
+  border: 2px solid #ddd;
+  padding: 3px 5px;
+  vertical-align: top;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.editor__content table td > *,
+.editor__content table th > * {
+  margin-bottom: 0;
+}
+
+.editor__content table th {
+  font-weight: 700;
+  text-align: left;
+}
+
+.editor__content table .selectedCell:after {
+  z-index: 2;
+  position: absolute;
+  content: "";
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(200, 200, 255, 0.4);
+  pointer-events: none;
+}
+
+.editor__content table .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  z-index: 20;
+  background-color: #adf;
+  pointer-events: none;
+}
+
+.editor__content .tableWrapper {
+  margin: 1em 0;
+  overflow-x: auto;
+}
+
+.editor__content .resize-cursor {
+  cursor: ew-resize;
+  cursor: col-resize;
+}
+
+.editor__content p.is-empty:first-child::before {
+  content: attr(data-empty-text);
+  float: left;
+  color: #aaa;
+  pointer-events: none;
+  height: 0;
+  font-style: italic;
 }
 </style>
