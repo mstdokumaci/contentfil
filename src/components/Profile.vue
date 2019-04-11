@@ -61,7 +61,8 @@ export default {
         el.innerHTML = item.get('content').compute()
         return {
           key: key,
-          title: el.firstChild ? el.firstChild.textContent : key
+          title: el.firstChild && el.firstChild.textContent.length
+            ? el.firstChild.textContent : `Untitled ${key.slice(0, 3)}`
         }
       }).filter(item => item)
     })
