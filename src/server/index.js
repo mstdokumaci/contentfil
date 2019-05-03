@@ -37,7 +37,7 @@ const publishDraft = (id, __, branchDraft) => {
     }
   })
   draft.set({
-    published: [ '@', 'published', 'id' ]
+    published: [ '@', 'published', id ]
   })
 }
 

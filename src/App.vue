@@ -5,11 +5,12 @@
 <script>
 import VueRouter from 'vue-router'
 import client from './client'
-import Home from './components/Home.vue';
-import Login from './components/Login.vue';
-import Signup from './components/Signup.vue';
-import Profile from './components/Profile.vue';
-import Editor from './components/Editor.vue';
+import Home from './components/Home.vue'
+import Login from './components/Login.vue'
+import Signup from './components/Signup.vue'
+import Profile from './components/Profile.vue'
+import Editor from './components/Editor.vue'
+import Story from './components/Story.vue'
 
 const router = new VueRouter({
   mode: 'history',
@@ -21,6 +22,11 @@ const router = new VueRouter({
     {
       path: '/draft/:id',
       component: Editor,
+      props: true
+    },
+    {
+      path: '/story/:id',
+      component: Story,
       props: true
     }
   ]
@@ -41,7 +47,6 @@ router.beforeEach((to, _, next) => {
 })
 
 export default {
-  name: 'app',
   data() {
     return {
       anonymousId: 0,

@@ -5,6 +5,7 @@
       <router-link to="/me">My Profile</router-link>
     </div>
     <div class="editor">
+      <button @click="publish" :disabled="published" class="publish">Publish</button>
       <editor-menu-bubble :editor="editor">
         <div
           slot-scope="{ commands, isActive, menu }"
@@ -80,7 +81,6 @@ import {
 let subscription;
 
 export default {
-  name: "editor",
   components: {
     EditorContent,
     EditorMenuBubble
@@ -113,34 +113,46 @@ export default {
         content: "",
         onUpdate: ({ getHTML }) => this.onChange(getHTML())
       }),
-      updating: false
-    };
+      updating: false,
+      published: true
+    }
   },
   props: ["id"],
   methods: {
     onChange(content) {
-      clearTimeout(this.updateTimer);
-      this.updateTimer = setTimeout(this.update, 200, content);
+      clearTimeout(this.updateTimer)
+      this.updateTimer = setTimeout(this.update, 200, content)
     },
-    update(content) {
-      this.updating = true;
-      this.$client.get([ 'draft', this.id, 'content' ], content).set(content);
-      this.updating = false;
+    update(newContent) {
+      this.updating = true
+      const content = this.$client.get([ 'draft', this.id, 'content' ], newContent)
+      content.set(newContent)
+      this.updating = false
+      const published = this.$client.get([ 'draft', this.id, 'published' ])
+      this.published = published
+        && content.compute() === published.get('content').compute()
+    },
+    publish() {
+      this.$client.get('draft').emit('publish', this.id)
+      this.published = true
     }
   },
   created() {
     subscription = this.$client
       .get("draft", {})
       .subscribe({ keys: [this.id] }, draft => {
-        const content = draft.get([ this.id, 'content' ]);
+        const content = draft.get([ this.id, 'content' ])
         if (!this.updating && content !== void 0 && content.compute() !== "") {
-          this.editor.setContent(content.compute());
+          this.editor.setContent(content.compute())
         }
+        const published = draft.get([ this.id, 'published' ])
+        this.published = published && content
+          && content.compute() === published.get('content').compute()
       });
   },
   beforeDestroy() {
-    this.editor.destroy();
-    subscription.unsubscribe();
+    this.editor.destroy()
+    subscription.unsubscribe()
   }
 };
 </script>
@@ -528,6 +540,10 @@ symbol [d="M0 0h24v24H0z"][data-v-2b9db09d] {
   color: #000;
   border-radius: 5px;
   padding: 0.2rem 0.5rem;
+}
+
+button.published {
+  float:right;
 }
 </style>
 

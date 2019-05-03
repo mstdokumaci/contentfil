@@ -10,13 +10,30 @@
     <div>
       <button @click="newStory">New Story</button>
     </div>
-    <ul>
-      <li v-for="item in list" :key="item.key">
-        <router-link :to="`/draft/${item.key}`">
-          {{item.title}}
-        </router-link>
-      </li>
-    </ul>
+    <div class="story-list">
+      <h3>
+        Drafts
+      </h3>
+      <ul>
+        <li v-for="item in draftList" :key="item.key">
+          <router-link :to="`/draft/${item.key}`">
+            {{item.title}}
+          </router-link>
+        </li>
+      </ul>
+    </div>
+    <div class="story-list">
+      <h3>
+        Published
+      </h3>
+      <ul>
+        <li v-for="item in publishedList" :key="item.key">
+          <router-link :to="`/story/${item.key}`">
+            {{item.title}}
+          </router-link>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -26,7 +43,8 @@ let subscription
 export default {
   data() {
     return {
-      list: [],
+      draftList: [],
+      publishedList: [],
       subscription: null
     }
   },
@@ -56,17 +74,26 @@ export default {
     }
 
     subscription = this.$client.get('draft', {}).subscribe(list => {
-      this.list = list.map((item, key) => {
+      this.draftList = list.map((item, key) => {
+        const published = item.get('published')
         const el = document.createElement('div')
         el.innerHTML = item.get('content').compute()
         return {
           key: key,
           title: el.firstChild && el.firstChild.textContent.length
-            ? el.firstChild.textContent : `Untitled ${key.slice(0, 3)}`
+            ? el.firstChild.textContent : `Untitled ${key.slice(0, 3)}`,
+          published: published
+            && item.get('content').compute() === published.get('content').compute()
         }
       }).filter(item => item)
+      this.publishedList = this.draftList.filter(item => item.published)
     })
   },
   destroyed: () => subscription && subscription.unsubscribe()
 }
 </script>
+<style scoped>
+div.story-list {
+  margin: 1rem 0;
+}
+</style>
