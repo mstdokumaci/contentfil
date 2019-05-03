@@ -10,8 +10,8 @@ const createDraft = (_, __, branchDraft) => {
   const timeBuf = Buffer.allocUnsafe(4)
   timeBuf.writeUInt32BE((Date.now() & 0xffffffff) >>> 0, 0)
   const id = Buffer.concat([
-      crypto.randomBytes(12),
-      timeBuf
+    crypto.randomBytes(12),
+    timeBuf
   ]).toString('base64')
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
@@ -27,7 +27,7 @@ const createDraft = (_, __, branchDraft) => {
 
 const publishDraft = (id, __, branchDraft) => {
   const draft = branchDraft.get(id)
-  if (draft == void 0) {
+  if (draft === void 0) {
     return
   }
   contentfil.get('published').set({
