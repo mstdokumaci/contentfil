@@ -46,6 +46,8 @@ router.beforeEach((to, _, next) => {
   next()
 })
 
+let subscription
+
 export default {
   data() {
     return {
@@ -94,7 +96,7 @@ export default {
       }
     })
 
-    this.$client.get('user', { type: 'none' }).subscribe(user => {
+    subscription = this.$client.get('user', { type: 'none' }).subscribe(user => {
       if (user.get('type').compute() !== 'none') {
         user = user.serialize()
         this.user = user
@@ -112,6 +114,7 @@ export default {
       }
     })
   },
+  beforeDestroy: () => subscription && subscription.unsubscribe(),
   router
 }
 </script>

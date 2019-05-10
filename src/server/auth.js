@@ -39,8 +39,8 @@ const authByPassword = (email, password, switcher) => {
       const tokenExpiresAt = user.get('tokenExpiresAt')
       let token
       if (
-        tokenExpiresAt !== void 0
-        && tokenExpiresAt.compute() > Date.now()
+        tokenExpiresAt !== void 0 &&
+        tokenExpiresAt.compute() > Date.now()
       ) {
         token = user.get('token').compute()
       } else {
@@ -66,9 +66,9 @@ const authByToken = (email, token, switcher) => {
   if (user !== void 0) {
     const tokenExpiresAt = user.get('tokenExpiresAt')
     if (
-      tokenExpiresAt !== void 0
-      && tokenExpiresAt.compute() > Date.now()
-      && user.get('token').compute() === token 
+      tokenExpiresAt !== void 0 &&
+      tokenExpiresAt.compute() > Date.now() &&
+      user.get('token').compute() === token
     ) {
       switcher(email).get('user').set({
         type: 'real',
@@ -92,25 +92,25 @@ const switchBranch = (fromBranch, branchKey, switcher) => {
   if (!authRequest.type) {
     setErrorStatus(branchUser)
   } else if (
-    authRequest.type === 'anonymous'
-    && authRequest.id
+    authRequest.type === 'anonymous' &&
+    authRequest.id
   ) {
     switcher(authRequest.id).get('user').set({
       type: 'anonymous',
       id: authRequest.id
     })
   } else if (
-    authRequest.type === 'token'
-    && authRequest.email
-    && authRequest.token
+    authRequest.type === 'token' &&
+    authRequest.email &&
+    authRequest.token
   ) {
     if (!authByToken(authRequest.email, authRequest.token, switcher)) {
       setErrorStatus(branchUser)
     }
   } else if (
-    authRequest.type === 'password'
-    && authRequest.email
-    && authRequest.password
+    authRequest.type === 'password' &&
+    authRequest.email &&
+    authRequest.password
   ) {
     if (!authByPassword(authRequest.email, authRequest.password, switcher)) {
       setErrorStatus(branchUser)

@@ -16,7 +16,7 @@ Object.defineProperty(
   }
 )
 
-
 const app = new Vue({
   render: h => h(App)
-}).$mount('#app')
+})
+app.$mount('#app')

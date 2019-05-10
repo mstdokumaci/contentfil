@@ -31,6 +31,7 @@
           <router-link :to="`/story/${item.key}`">
             {{item.title}}
           </router-link>
+          published at: {{item.date}}
         </li>
       </ul>
     </div>
@@ -83,13 +84,22 @@ export default {
           title: el.firstChild && el.firstChild.textContent.length
             ? el.firstChild.textContent : `Untitled ${key.slice(0, 3)}`,
           published: published
-            && item.get('content').compute() === published.get('content').compute()
         }
       }).filter(item => item)
-      this.publishedList = this.draftList.filter(item => item.published)
+      this.publishedList = this.draftList.filter(item => item.published).map(item => {
+        const published = item.published
+        const el = document.createElement('div')
+        el.innerHTML = published.get('content').compute()
+        return {
+          key: item.key,
+          title: el.firstChild && el.firstChild.textContent.length
+            ? el.firstChild.textContent : `Untitled ${key.slice(0, 3)}`,
+          date: published && (new Date(published.get('date').compute())).toUTCString()
+        }
+      })
     })
   },
-  destroyed: () => subscription && subscription.unsubscribe()
+  beforeDestroy: () => subscription && subscription.unsubscribe()
 }
 </script>
 <style scoped>

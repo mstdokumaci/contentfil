@@ -6,6 +6,7 @@
     </div>
     <div class="editor">
       <button @click="publish" :disabled="published" class="publish">Publish</button>
+      <span>Last published: {{publishDate}}</span>
       <editor-menu-bubble :editor="editor">
         <div
           slot-scope="{ commands, isActive, menu }"
@@ -57,7 +58,7 @@
 </template>
 
 <script>
-import { Editor, EditorContent, EditorMenuBubble } from "tiptap";
+import { Editor, EditorContent, EditorMenuBubble } from 'tiptap'
 import {
   Blockquote,
   BulletList,
@@ -76,9 +77,9 @@ import {
   Underline,
   History,
   Placeholder
-} from "tiptap-extensions";
+} from 'tiptap-extensions'
 
-let subscription;
+let subscription
 
 export default {
   components: {
@@ -114,10 +115,11 @@ export default {
         onUpdate: ({ getHTML }) => this.onChange(getHTML())
       }),
       updating: false,
-      published: true
+      published: true,
+      publishDate: 'Never'
     }
   },
-  props: ["id"],
+  props: [ 'id' ],
   methods: {
     onChange(content) {
       clearTimeout(this.updateTimer)
@@ -125,36 +127,32 @@ export default {
     },
     update(newContent) {
       this.updating = true
-      const content = this.$client.get([ 'draft', this.id, 'content' ], newContent)
-      content.set(newContent)
+      this.$client.get([ 'draft', this.id, 'content' ], newContent).set(newContent)
       this.updating = false
-      const published = this.$client.get([ 'draft', this.id, 'published' ])
-      this.published = published
-        && content.compute() === published.get('content').compute()
     },
     publish() {
       this.$client.get('draft').emit('publish', this.id)
-      this.published = true
     }
   },
   created() {
     subscription = this.$client
-      .get("draft", {})
+      .get('draft', {})
       .subscribe({ keys: [this.id] }, draft => {
         const content = draft.get([ this.id, 'content' ])
-        if (!this.updating && content !== void 0 && content.compute() !== "") {
+        if (!this.updating && content !== void 0 && content.compute() !== '') {
           this.editor.setContent(content.compute())
         }
         const published = draft.get([ this.id, 'published' ])
         this.published = published && content
           && content.compute() === published.get('content').compute()
+        this.publishDate = published ? (new Date(published.get('date').compute())).toUTCString() : 'Never'
       });
   },
   beforeDestroy() {
     this.editor.destroy()
     subscription.unsubscribe()
   }
-};
+}
 </script>
 
 <style scoped>

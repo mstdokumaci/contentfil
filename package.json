@@ -9,7 +9,8 @@
     "build:autoprefixer": "postcss --use autoprefixer -o dist/assets/css/app.css dist/assets/css/app.css",
     "build:cssnano": "cssnano dist/assets/css/app.css dist/assets/css/app.css",
     "server": "node src/server",
-    "client": "cross-env NODE_ENV=development rollup -cw"
+    "client": "cross-env NODE_ENV=development rollup -cw",
+    "test": "standard --fix"
   },
   "dependencies": {
     "stx": "^0.4.9",

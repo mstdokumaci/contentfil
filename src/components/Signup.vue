@@ -5,7 +5,7 @@
       <router-link to="/login">Login</router-link>
     </div>
     <div>
-      <span style="color:red">{{this.error}}</span>
+      <span style="color:red">{{error}}</span>
     </div>
     <div>
       <label for="email">E-mail</label>
