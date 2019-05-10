@@ -65,8 +65,7 @@ if (isDevelopment) {
     serve({
       contentBase: './dist/',
       port: 8080,
-      open: true,
-      historyApiFallback: true
+      open: true
     })
   )
 }
