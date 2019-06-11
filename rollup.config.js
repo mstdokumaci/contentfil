@@ -56,7 +56,7 @@ if (isProduction) {
       'process.env.NODE_ENV': JSON.stringify('production')
     })
   )
-  config.plugins.push(uglify())
+  config.plugins.push(uglify)
 }
 
 if (isDevelopment) {
