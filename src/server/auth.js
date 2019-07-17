@@ -1,7 +1,13 @@
-const { create } = require('stx')
+const { createPersist } = require('stx')
+const { PersistRiak } = require('stx-persist-riak')
 const crypto = require('crypto')
 
-const auth = create()
+let auth
+
+createPersist({}, new PersistRiak([ '127.0.0.1' ], 'auth'))
+  .then(authState => {
+    auth = authState
+  })
 
 const setErrorStatus = user => {
   if (user.get('type') !== void 0) {
@@ -30,7 +36,22 @@ const createUser = (user, _, branchUser) => {
   branchUser.set({ status: 'created' })
 }
 
-const authByPassword = (email, password, switcher) => {
+const loadUser = async (switcher, email, token, user) => {
+  const userBranch = await switcher(
+    email, new PersistRiak([ '127.0.0.1' ], `user-${email}`)
+  )
+
+  if (userBranch.get([ 'user', 'type' ]) === void 0) {
+    userBranch.get('user').set({
+      type: 'real',
+      email,
+      token,
+      tokenExpiresAt: user.get('tokenExpiresAt').compute()
+    })
+  }
+}
+
+const authByPassword = async (email, password, switcher) => {
   const user = auth.get(email)
   if (user !== void 0) {
     const salt = Buffer.from(user.get('salt').compute(), 'base64')
@@ -50,18 +71,12 @@ const authByPassword = (email, password, switcher) => {
           tokenExpiresAt: Date.now() + 86400 * 1000 * 10
         })
       }
-      switcher(email).get('user').set({
-        type: 'real',
-        email,
-        token,
-        tokenExpiresAt: user.get('tokenExpiresAt').compute()
-      })
-      return true
+      return loadUser(switcher, email, token, user)
     }
   }
 }
 
-const authByToken = (email, token, switcher) => {
+const authByToken = async (email, token, switcher) => {
   const user = auth.get(email)
   if (user !== void 0) {
     const tokenExpiresAt = user.get('tokenExpiresAt')
@@ -70,18 +85,12 @@ const authByToken = (email, token, switcher) => {
       tokenExpiresAt.compute() > Date.now() &&
       user.get('token').compute() === token
     ) {
-      switcher(email).get('user').set({
-        type: 'real',
-        email,
-        token,
-        tokenExpiresAt: tokenExpiresAt.compute()
-      })
-      return true
+      return loadUser(switcher, email, token, user)
     }
   }
 }
 
-const switchBranch = (fromBranch, branchKey, switcher) => {
+const switchBranch = async (fromBranch, branchKey, switcher) => {
   let authRequest
   const branchUser = fromBranch.get('user')
   try {
@@ -95,7 +104,8 @@ const switchBranch = (fromBranch, branchKey, switcher) => {
     authRequest.type === 'anonymous' &&
     authRequest.id
   ) {
-    switcher(authRequest.id).get('user').set({
+    const toBranch = await switcher(authRequest.id)
+    toBranch.get('user').set({
       type: 'anonymous',
       id: authRequest.id
     })
@@ -104,17 +114,15 @@ const switchBranch = (fromBranch, branchKey, switcher) => {
     authRequest.email &&
     authRequest.token
   ) {
-    if (!authByToken(authRequest.email, authRequest.token, switcher)) {
+    return authByToken(authRequest.email, authRequest.token, switcher) ||
       setErrorStatus(branchUser)
-    }
   } else if (
     authRequest.type === 'password' &&
     authRequest.email &&
     authRequest.password
   ) {
-    if (!authByPassword(authRequest.email, authRequest.password, switcher)) {
+    return authByPassword(authRequest.email, authRequest.password, switcher) ||
       setErrorStatus(branchUser)
-    }
   } else {
     setErrorStatus(branchUser)
   }
