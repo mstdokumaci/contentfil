@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "stx": "latest",
-    "stx-persist-riak": "latest",
+    "stx-persist-rocksdb": "latest",
     "tiptap": "^1.14.0",
     "tiptap-extensions": "^1.14.0",
     "vue": "^2.5.13",

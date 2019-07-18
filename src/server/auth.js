@@ -1,10 +1,10 @@
 const { createPersist } = require('stx')
-const { PersistRiak } = require('stx-persist-riak')
+const { PersistRocksDB } = require('stx-persist-rocksdb')
 const crypto = require('crypto')
 
 let auth
 
-createPersist({}, new PersistRiak([ '127.0.0.1' ], 'auth'))
+createPersist({}, new PersistRocksDB('db/auth'))
   .then(authState => {
     auth = authState
   })
@@ -38,7 +38,7 @@ const createUser = (user, _, branchUser) => {
 
 const loadUser = async (switcher, email, token, user) => {
   const userBranch = await switcher(
-    email, new PersistRiak([ '127.0.0.1' ], `user-${email}`)
+    email, new PersistRocksDB(`db/user/${email}`)
   )
 
   if (userBranch.get([ 'user', 'type' ]) === void 0) {

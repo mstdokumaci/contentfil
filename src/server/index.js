@@ -1,5 +1,5 @@
 const { createPersist } = require('stx')
-const { PersistRiak } = require('stx-persist-riak')
+const { PersistRocksDB } = require('stx-persist-rocksdb')
 
 const {
   createUser,
@@ -13,10 +13,7 @@ createPersist(
     draft: {},
     published: {}
   },
-  new PersistRiak(
-    [ '127.0.0.1' ],
-    'master'
-  )
+  new PersistRocksDB('master')
 )
   .then(master => {
     const {
