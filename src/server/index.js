@@ -13,7 +13,7 @@ createPersist(
     draft: {},
     published: {}
   },
-  new PersistRocksDB('master')
+  new PersistRocksDB('db/master')
 )
   .then(master => {
     const {
