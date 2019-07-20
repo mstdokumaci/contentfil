@@ -13,8 +13,8 @@
     "test": "standard --fix"
   },
   "dependencies": {
-    "stx": "latest",
-    "stx-persist-rocksdb": "latest",
+    "stx": "^0.5.5",
+    "stx-persist-rocksdb": "0.0.5",
     "tiptap": "^1.14.0",
     "tiptap-extensions": "^1.14.0",
     "vue": "^2.5.13",
