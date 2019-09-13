@@ -1,9 +1,5 @@
 <template>
   <div>
-    <div>
-      <router-link to="/">Home</router-link>
-      <router-link to="/me">My Profile</router-link>
-    </div>
     <div v-html="content" class="content">
     </div>
   </div>

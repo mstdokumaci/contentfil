@@ -1,6 +1,5 @@
 <template>
     <div>
-      <router-link to="/me">My Profile</router-link>
       <ul class="story-list">
         <li v-for="item in list" :key="item.key">
           <router-link :to="`/story/${item.key}`">

@@ -1,5 +1,13 @@
 <template>
-  <router-view :user="user" :anonymous-id="anonymousId"></router-view>
+  <div id ="menu">
+    <ul>
+      <li><router-link to="/" :tag="$route.path === '/' ? 'span' : 'a'">Home</router-link></li>
+      <li v-if="user.type === 'real'"><router-link to="/me" :tag="$route.path === '/me' ? 'span' : 'a'">My Profile</router-link></li>
+      <li v-if="user.type !== 'real'"><router-link to="/login" :tag="$route.path === '/login' ? 'span' : 'a'">Login</router-link></li>
+      <li v-if="user.type !== 'real'"><router-link to="/signup" :tag="$route.path === '/signup' ? 'span' : 'a'">Signup</router-link></li>
+    </ul>
+    <router-view :user="user" :anonymous-id="anonymousId"></router-view>
+  </div>
 </template>
 
 <script>
@@ -158,5 +166,18 @@ body {
 
 a {
     color: inherit
+}
+</style>
+
+<style scoped>
+#menu > ul {
+  list-style-type: none;
+  margin-bottom: 0.5rem;
+}
+#menu > ul > li {
+  display: inline;
+}
+#menu > ul > li > * {
+  padding: 0.3rem;
 }
 </style>

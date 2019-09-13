@@ -10,7 +10,8 @@ import image from 'rollup-plugin-image'
 
 let plugins = [
   vue({
-    css: './dist/assets/css/app.css'
+    css: './dist/assets/css/app.css',
+    needMap: false
   }),
   resolve({
     browser: true,
@@ -45,7 +46,8 @@ if (process.env.NODE_ENV === 'production') {
     serve({
       contentBase: './dist/',
       port: 8080,
-      open: true
+      open: true,
+      historyApiFallback: true
     })
   )
 }

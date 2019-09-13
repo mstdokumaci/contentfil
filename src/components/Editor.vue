@@ -1,9 +1,5 @@
 <template>
   <div>
-    <div>
-      <router-link to="/">Home</router-link>
-      <router-link to="/me">My Profile</router-link>
-    </div>
     <div class="editor">
       <button @click="publish" :disabled="published" class="publish">Publish</button>
       <span>Last published: {{publishDate}}</span>
