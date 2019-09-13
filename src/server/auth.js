@@ -9,9 +9,9 @@ createPersist({}, new PersistRocksDB('db/auth'))
     auth = authState
   })
 
-const setErrorStatus = user => {
+const setErrorStatus = (user, error) => {
   if (user.get('type') !== void 0) {
-    user.set({ status: 'error' })
+    user.set({ status: 'error', error })
   }
 }
 
@@ -19,11 +19,11 @@ const createUser = (user, _, branchUser) => {
   try {
     user = JSON.parse(user)
   } catch (e) {
-    return setErrorStatus(branchUser)
+    return setErrorStatus(branchUser, 'Malformed user data')
   }
   const { email, password } = user
-  if (auth.get(email) !== void 0) {
-    return setErrorStatus(branchUser)
+  if (auth.get(email) !== undefined) {
+    return setErrorStatus(branchUser, 'User exists')
   }
   const salt = crypto.randomBytes(64)
   const hash = crypto.scryptSync(password, salt, 64).toString('base64')
@@ -49,6 +49,8 @@ const loadUser = async (switcher, email, token, user) => {
       tokenExpiresAt: user.get('tokenExpiresAt').compute()
     })
   }
+
+  return true
 }
 
 const authByPassword = async (email, password, switcher) => {
@@ -96,10 +98,10 @@ const switchBranch = async (fromBranch, branchKey, switcher) => {
   try {
     authRequest = JSON.parse(branchKey)
   } catch (e) {
-    return setErrorStatus(branchUser)
+    return setErrorStatus(branchUser, 'Malformed authentication request')
   }
   if (!authRequest.type) {
-    setErrorStatus(branchUser)
+    setErrorStatus(branchUser, 'Missing authentication type')
   } else if (
     authRequest.type === 'anonymous' &&
     authRequest.id
@@ -114,17 +116,17 @@ const switchBranch = async (fromBranch, branchKey, switcher) => {
     authRequest.email &&
     authRequest.token
   ) {
-    return authByToken(authRequest.email, authRequest.token, switcher) ||
-      setErrorStatus(branchUser)
+    const success = await authByToken(authRequest.email, authRequest.token, switcher)
+    return success || setErrorStatus(branchUser, 'Authentication failed')
   } else if (
     authRequest.type === 'password' &&
     authRequest.email &&
     authRequest.password
   ) {
-    return authByPassword(authRequest.email, authRequest.password, switcher) ||
-      setErrorStatus(branchUser)
+    const success = await authByPassword(authRequest.email, authRequest.password, switcher)
+    return success || setErrorStatus(branchUser, 'Authentication failed')
   } else {
-    setErrorStatus(branchUser)
+    setErrorStatus(branchUser, 'Unknown authentication type')
   }
 }
 

@@ -67,7 +67,7 @@ export default {
             }))
             listener.off()
           } else if (status === 'error') {
-            this.error = 'Server error'
+            this.error = user.get('error').compute()
             listener.off()
           }
         })

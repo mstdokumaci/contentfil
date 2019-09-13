@@ -5,31 +5,27 @@
   "author": "Mustafa Dokumacı <mustafa@foraa.com>",
   "scripts": {
     "build": "run-s build:**",
-    "build:js": "cross-env NODE_ENV=production rollup -c",
+    "build:js": "NODE_ENV=production rollup -c",
     "build:autoprefixer": "postcss --use autoprefixer -o dist/assets/css/app.css dist/assets/css/app.css",
     "build:cssnano": "postcss dist/assets/css/app.css > dist/assets/css/app.css",
     "server": "node src/server",
-    "client": "cross-env NODE_ENV=development rollup -cw",
+    "client": "rollup -cw",
     "test": "standard --fix"
   },
   "dependencies": {
-    "stx": "^0.5.5",
+    "stx": "^0.6.0",
     "stx-persist-rocksdb": "0.0.5",
     "tiptap": "^1.14.0",
     "tiptap-extensions": "^1.14.0",
-    "vue": "^2.5.13",
-    "vue-router": "^3.0.2"
+    "vue": "^2.6.10",
+    "vue-router": "^3.0.6"
   },
   "devDependencies": {
     "autoprefixer": "^9.0.0",
-    "babel-core": "^6.26.0",
-    "cross-env": "^5.0.5",
     "cssnano": "^4.1.10",
     "npm-run-all": "^4.0.1",
     "postcss-cli": "^6.0.0",
     "rollup": "^1.0.0",
-    "rollup-plugin-alias": "^1.5.0",
-    "rollup-plugin-buble": "^0.19.6",
     "rollup-plugin-commonjs": "^9.1.0",
     "rollup-plugin-image": "^1.0.2",
     "rollup-plugin-livereload": "^1.0.1",
@@ -40,6 +36,6 @@
     "rollup-plugin-uglify": "^6.0.0",
     "rollup-plugin-vue": "^5.0.0",
     "standard": "^12.0.0",
-    "vue-template-compiler": "^2.5.13"
+    "vue-template-compiler": "^2.5.17"
   }
 }

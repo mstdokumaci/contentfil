@@ -94,7 +94,7 @@ export default {
           key: item.key,
           title: el.firstChild && el.firstChild.textContent.length
             ? el.firstChild.textContent : `Untitled ${key.slice(0, 3)}`,
-          date: published && (new Date(published.get('date').compute())).toUTCString()
+          date: (new Date(published.get('date').compute())).toUTCString()
         }
       })
     })

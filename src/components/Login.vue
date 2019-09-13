@@ -50,7 +50,7 @@ export default {
           .on((_, stamp, status) => {
             status = status.compute()
             if (status === 'error') {
-              this.error = 'Server error'
+              this.error = this.$client.get(['user', 'error']).compute()
               listener.off()
             }
           })
