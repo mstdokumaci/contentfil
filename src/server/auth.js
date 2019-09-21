@@ -41,10 +41,15 @@ const loadUser = async (switcher, email, token, user) => {
     email, new PersistRocksDB(`db/user/${email}`)
   )
 
-  if (userBranch.get([ 'user', 'type' ]) === void 0) {
+  if (userBranch.get([ 'user', 'type' ]) === undefined) {
     userBranch.get('user').set({
       type: 'real',
       email,
+      token,
+      tokenExpiresAt: user.get('tokenExpiresAt').compute()
+    })
+  } else {
+    userBranch.get('user').set({
       token,
       tokenExpiresAt: user.get('tokenExpiresAt').compute()
     })
