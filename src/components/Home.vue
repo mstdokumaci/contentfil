@@ -38,8 +38,3 @@ export default {
   beforeDestroy: () => subscription && subscription.unsubscribe()
 }
 </script>
-<style scoped>
-ul.story-list {
-  margin: 1rem 0;
-}
-</style>

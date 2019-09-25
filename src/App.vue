@@ -1,20 +1,22 @@
 <template>
-  <div>
-    <navigation-menu :user="user" />
-    <router-view :user="user" :anonymous-id="anonymousId"></router-view>
+  <div class="container">
+    <navigation-menu :user="user" :anonymous-id="anonymousId" />
+    <router-view :user="user"></router-view>
   </div>
 </template>
 
 <script>
 import VueRouter from 'vue-router'
 import client from './client'
-import Menu from './components/Menu.vue'
-import Home from './components/Home.vue'
-import Login from './components/Login.vue'
-import Signup from './components/Signup.vue'
-import Profile from './components/Profile.vue'
-import Editor from './components/Editor.vue'
-import Story from './components/Story.vue'
+import Menu from './components/Menu'
+import Home from './components/Home'
+import Login from './components/Login'
+import Signup from './components/Signup'
+import Profile from './components/Profile'
+import Draft from './components/Draft'
+import Published from './components/Published'
+import Editor from './components/Editor'
+import Story from './components/Story'
 
 const router = new VueRouter({
   mode: 'history',
@@ -22,11 +24,24 @@ const router = new VueRouter({
     { path: '/', component: Home },
     { path: '/login', component: Login },
     { path: '/signup', component: Signup },
-    { path: '/me', component: Profile },
     {
-      path: '/draft/:id',
-      component: Editor,
-      props: true
+      path: '/me',
+      component: Profile,
+      children: [
+        {
+          path: '',
+          component: Draft
+        },
+        {
+          path: 'published',
+          component: Published
+        },
+        {
+          path: 'draft/:id',
+          component: Editor,
+          props: true
+        }
+      ]
     },
     {
       path: '/story/:id',
@@ -38,6 +53,8 @@ const router = new VueRouter({
 
 const route = client.get('route', '')
 
+let offLineRoute
+
 route.subscribe(to => {
   to = to.compute()
   if (to !== '' && router.currentRoute.path !== to) {
@@ -46,7 +63,21 @@ route.subscribe(to => {
 })
 
 router.beforeEach((to, _, next) => {
-  route.set(to.fullPath)
+  let type = client.get(['user', 'type'])
+  if (!type) {
+    offLineRoute = to.path
+    return next()
+  }
+
+  type = type.compute()
+
+  if (type === 'real' && ['/login', '/signup'].includes(to.path)) {
+    return next('/me')
+  } else if (type !== 'real' && ['/me'].includes(to.path)) {
+    return next('/login')
+  }
+
+  route.set(to.path)
   next()
 })
 
@@ -106,6 +137,10 @@ export default {
     subscription = this.$client.get('user', { type: 'none' }).subscribe(user => {
       if (user.get('type').compute() !== 'none') {
         user = user.serialize()
+        if (offLineRoute) {
+          route.set(offLineRoute)
+          offLineRoute = null
+        }
         this.user = user
         if (user.tokenExpiresAt) {
           if (this.timeout) {
@@ -126,44 +161,202 @@ export default {
 }
 </script>
 
-<style>
-* {
+<style lang="scss">
+.editor__content {
+  * {
+    font-family:-apple-system,BlinkMacSystemFont,San Francisco,Roboto,Segoe UI,Helvetica Neue,sans-serif;
+    color:#000;
+    margin:0;
+    padding:0;
+    -webkit-box-sizing:border-box;
+    box-sizing:border-box;
+    -webkit-text-size-adjust:100%;
+    -moz-text-size-adjust:100%;
+    -ms-text-size-adjust:100%;
+    text-size-adjust:100%;
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+    -webkit-touch-callout:none;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    text-rendering:optimizeLegibility
+  }
+
+  :focus {
+    outline:none
+  }
+
+  :after,
+  :before {
+    -webkit-box-sizing:border-box;
+    box-sizing:border-box
+  }
+
+  a {
+    color:inherit
+  }
+
+  blockquote,
+  h1,
+  h2,
+  h3,
+  ol,
+  p,
+  pre,
+  ul {
+    margin: 1rem 0
+  }
+
+  blockquote:first-child,
+  h1:first-child,
+  h2:first-child,
+  h3:first-child,
+  ol:first-child,
+  p:first-child,
+  pre:first-child,
+  ul:first-child {
+    margin-top:0
+  }
+
+  blockquote:last-child,
+  h1:last-child,
+  h2:last-child,
+  h3:last-child,
+  ol:last-child,
+  p:last-child,
+  pre:last-child,
+  ul:last-child {
+    margin-bottom:0
+  }
+
+  h1,
+  h2,
+  h3 {
+    line-height:1.3
+  }
+
+  pre {
+    padding: 0.7rem 1rem;
+    border-radius: 5px;
+    background: #000;
+    color: #fff;
+    font-size: 0.8rem;
+    overflow-x: auto;
+  }
+
+  pre code {
+    display: block;
+  }
+
+  p code {
+    display: inline-block;
+    padding: 0 0.4rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.8);
+  }
+
+  ol,
+  ul {
+    padding-left: 1rem;
+  }
+
+  li > ol,
+  li > p,
+  li > ul {
     margin: 0;
-    padding: 0;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  blockquote {
+    border-left: 3px solid rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.8);
+    padding-left: 0.8rem;
+    font-style: italic;
+  }
+
+  blockquote p {
+    margin: 0;
+  }
+
+  img {
+    max-width: 100%;
+    border-radius: 3px;
+  }
+
+  table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  table td,
+  table th {
+    min-width: 1em;
+    border: 2px solid #ddd;
+    padding: 3px 5px;
+    vertical-align: top;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
-    -webkit-text-size-adjust: 100%;
-    -moz-text-size-adjust: 100%;
-    -ms-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    -webkit-touch-callout: none;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility
-}
+    position: relative;
+  }
 
-:focus {
-    outline: none
-}
+  table td > *,
+  table th > * {
+    margin-bottom: 0;
+  }
 
-:after, :before {
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box
-}
+  table th {
+    font-weight: 700;
+    text-align: left;
+  }
 
-html {
-    font-family: -apple-system, BlinkMacSystemFont, San Francisco, Roboto, Segoe UI, Helvetica Neue, sans-serif;
-    font-size: 18px;
-    color: #000;
-    line-height: 1.5
-}
+  table .selectedCell:after {
+    z-index: 2;
+    position: absolute;
+    content: "";
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(200, 200, 255, 0.4);
+    pointer-events: none;
+  }
 
-body {
-    margin: 2rem;
-}
+  table .column-resize-handle {
+    position: absolute;
+    right: -2px;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    z-index: 20;
+    background-color: #adf;
+    pointer-events: none;
+  }
 
-a {
-    color: inherit
+  .tableWrapper {
+    margin: 1em 0;
+    overflow-x: auto;
+  }
+
+  .resize-cursor {
+    cursor: ew-resize;
+    cursor: col-resize;
+  }
+
+  p.is-empty:first-child::before {
+    content: attr(data-empty-text);
+    float: left;
+    color: #aaa;
+    pointer-events: none;
+    height: 0;
+    font-style: italic;
+  }
 }
 </style>

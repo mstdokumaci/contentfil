@@ -1,33 +1,44 @@
 <template>
   <div>
-    <div v-html="content" class="content">
+    <router-link v-if="hasDraft" :to='`/me/draft/${id}`'>Edit</router-link>
+    <div v-html="content" class="editor__content">
     </div>
   </div>
 </template>
 <script>
-let subscription
+let storySubscription, draftSubscription
 
 export default {
   data() {
     return {
-      content: ''
+      content: '',
+      hasDraft: false
     }
   },
   props: [ 'id' ],
   created() {
-    subscription = this.$client
+    storySubscription = this.$client
       .get([ 'published', this.id ], {})
       .subscribe(story => {
-        this.content = story.get('content').compute()
+        if (story.get('content')) {
+          this.content = story.get('content').compute()
+        }
+      })
+    draftSubscription = this.$client
+      .get([ 'draft', this.id ], {})
+      .subscribe(story => {
+        if (story && story.get('content')) {
+          this.hasDraft = true
+          setTimeout(() => {
+            draftSubscription.unsubscribe()
+            draftSubscription = null
+          })
+        }
       })
   },
-  beforeDestroy: () => subscription && subscription.unsubscribe()
+  beforeDestroy: () =>  {
+    storySubscription && storySubscription.unsubscribe()
+    draftSubscription && draftSubscription.unsubscribe()
+  }
 }
 </script>
-<style scoped>
-div.content {
-  position: relative;
-  max-width: 30rem;
-  margin: 0 auto 5rem;
-}
-</style>

@@ -1,22 +1,33 @@
 <template>
   <div>
-    <div>
-      <span style="color:red">{{error}}</span>
+    <div class="row">
+      <span class="col s6 offset-s3" style="color:red">{{error}}</span>
     </div>
-    <div>
-      <label for="email">E-mail</label>
-      <input type="text" id="email" v-model="email" />
+    <div class="row">
+      <div class="input-field col s6 offset-s3">
+        <i class="material-icons prefix">email</i>
+        <input type="text" id="email" v-model="email" class="validate">
+        <label for="email">E-mail</label>
+      </div>
     </div>
-    <div>
-      <label for="password">Password</label>
-      <input type="password" id="password" v-model="password" />
+    <div class="row">
+      <div class="input-field col s6 offset-s3">
+        <i class="material-icons prefix">lock_open</i>
+        <input type="password" id="password" v-model="password" class="validate">
+        <label for="password">Password</label>
+      </div>
     </div>
-    <div>
-      <label for="password2">Repeat Password</label>
-      <input type="password" id="password2" v-model="password2" />
+    <div class="row">
+      <div class="input-field col s6 offset-s3">
+        <i class="material-icons prefix">lock_open</i>
+        <input type="password" id="password2" v-model="password2" class="validate">
+        <label for="password2">Repeat Password</label>
+      </div>
     </div>
-    <div>
-      <button @click="signup">Sign up</button>
+    <div class="row">
+      <div class="input-field col s6 offset-s3">
+        <button class="btn right waves-effect" @click="signup">Sign up</button>
+      </div>
     </div>
   </div>
 </template>
@@ -32,13 +43,6 @@ export default {
     }
   },
   props: [ 'user' ],
-  watch: {
-    'user.type': function (type) {
-      if (type === 'real') {
-        this.$router.replace('/me')
-      }
-    }
-  },
   methods: {
     signup() {
       if (this.email.length < 5) {
@@ -73,11 +77,6 @@ export default {
           password: this.password
         }))
       }
-    }
-  },
-  created() {
-    if (this.user.type === 'real') {
-        this.$router.replace('/me')
     }
   }
 }

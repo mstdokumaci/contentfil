@@ -55,6 +55,8 @@ const loadUser = async (switcher, email, token, user) => {
     })
   }
 
+  userBranch.set({ route: '/me' })
+
   return true
 }
 

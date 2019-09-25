@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-import App from './App.vue'
+import App from './App'
 import client from './client'
 
 Vue.config.productionTip = false

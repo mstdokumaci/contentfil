@@ -16,7 +16,7 @@ const createDraft = (_, __, branchDraft) => {
       content: ''
     }
   })
-  branchDraft.root().get('route').set(`/draft/${id}`)
+  branchDraft.root().get('route').set(`/me/draft/${id}`)
 }
 
 const publishDraft = (master, id, __, branchDraft) => {
