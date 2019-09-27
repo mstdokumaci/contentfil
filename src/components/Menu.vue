@@ -1,6 +1,6 @@
 <template>
   <nav class="nav-extended">
-    <div class="nav-wrapper teal darken-1">
+    <div class="nav-wrapper blue-grey lighten-1">
       <router-link to="/" class="brand-logo">Foraa</router-link>
       <ul class="right">
         <template v-if="authenticated">
@@ -23,7 +23,7 @@
         </template>
       </ul>
     </div>
-    <div v-if="$route.path.startsWith('/me')" class="nav-content teal lighten-1">
+    <div v-if="$route.path.startsWith('/me')" class="nav-content blue-grey lighten-2">
       <ul class="tabs tabs-transparent">
         <li class="tab">
           <router-link to="/me" :class="{active: $route.path === '/me'}">Drafts</router-link>
@@ -32,7 +32,7 @@
           <router-link to="/me/published" :class="{active: $route.path === '/me/published'}">Published</router-link>
         </li>
         <li>
-          <button class="btn waves-effect teal darken-1" @click="newStory">
+          <button class="btn waves-effect" @click="newStory">
             <i class="material-icons">note_add</i>
           </button>
         </li>

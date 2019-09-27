@@ -163,8 +163,11 @@ export default {
 
 <style lang="scss">
 .editor__content {
+  max-width: 40rem;
+  margin: 2rem auto;
+
   * {
-    font-family:-apple-system,BlinkMacSystemFont,San Francisco,Roboto,Segoe UI,Helvetica Neue,sans-serif;
+    font-family:medium-content-serif-font, Georgia, Cambria, "Times New Roman", Times, serif;
     color:#000;
     margin:0;
     padding:0;
@@ -231,7 +234,26 @@ export default {
   h1,
   h2,
   h3 {
+    opacity: 0.75;
     line-height:1.3
+  }
+
+  h1 {
+    font-size: 3.5rem;
+  }
+
+  h2 {
+    opacity: 0.8;
+    font-size: 2.8rem;
+  }
+
+  h3 {
+    opacity: 0.85;
+    font-size: 2rem;
+  }
+
+  p {
+    font-size: 1.5rem;
   }
 
   pre {
