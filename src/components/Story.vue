@@ -1,6 +1,10 @@
 <template>
-  <div>
-    <router-link v-if="hasDraft" :to='`/me/draft/${id}`'>Edit</router-link>
+  <div class="row">
+    <div class="fixed-action-btn" v-if="hasDraft">
+      <router-link class="btn btn-floating btn-large waves-effect" :to='`/me/draft/${id}`' tag="button">
+        <i class="material-icons">edit</i>
+      </router-link>
+    </div>
     <div v-html="content" class="editor__content">
     </div>
   </div>
@@ -17,17 +21,25 @@ export default {
   },
   props: [ 'id' ],
   created() {
+    let loadTimeout = setTimeout(() => {
+      this.$router.push('/')
+    }, 500)
     storySubscription = this.$client
-      .get([ 'published', this.id ], {})
-      .subscribe(story => {
-        if (story.get('content')) {
-          this.content = story.get('content').compute()
+      .get('published', {})
+      .subscribe({ keys: [this.id] }, published => {
+        const content = published.get([this.id, 'content'])
+        if (content) {
+          if (loadTimeout) {
+            clearTimeout(loadTimeout)
+            loadTimeout = null
+          }
+          this.content = content.compute()
         }
       })
     draftSubscription = this.$client
-      .get([ 'draft', this.id ], {})
-      .subscribe(story => {
-        if (story && story.get('content')) {
+      .get('draft', {})
+      .subscribe({ keys: [this.id] }, draft => {
+        if (draft && draft.get([this.id, 'content'])) {
           this.hasDraft = true
           setTimeout(() => {
             draftSubscription.unsubscribe()

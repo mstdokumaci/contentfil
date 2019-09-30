@@ -1,7 +1,16 @@
 <template>
   <div class="editor" auto-focus="1">
-    <button @click="publish" :disabled="published" class="publish">Publish</button>
-    <span>Last published: {{publishDate}}</span>
+    <div class="fixed-action-btn">
+      <button
+        @click="publish"
+        :disabled="published"
+        class="btn-floating btn-large waves-effect tooltipped"
+        :data-tooltip="`Last published: ${publishDate}`"
+        data-position="left"
+      >
+        <i class="material-icons">publish</i>
+      </button>
+    </div>
     <editor-menu-bubble :editor="editor" :keep-in-bounds="false" v-slot="{ commands, isActive, menu }">
       <div
         class="menububble"
@@ -128,10 +137,17 @@ export default {
     }
   },
   created() {
+    let loadTimeout = setTimeout(() => {
+      this.$router.push('/me')
+    }, 500)
     subscription = this.$client
       .get('draft', {})
       .subscribe({ keys: [this.id] }, draft => {
         const content = draft.get([ this.id, 'content' ])
+        if (loadTimeout && content) {
+          clearTimeout(loadTimeout)
+          loadTimeout = null
+        }
         if (!this.updating && content !== void 0 && content.compute() !== '') {
           const { from, to } = this.editor.resolveSelection()
           this.editor.setContent(content.compute())
@@ -142,6 +158,9 @@ export default {
           && content.compute() === published.get('content').compute()
         this.publishDate = published ? (new Date(published.get('date').compute())).toUTCString() : 'Never'
       });
+  },
+  mounted() {
+    M.Tooltip.init(document.querySelectorAll('.tooltipped'))
   },
   beforeDestroy() {
     this.editor.destroy()

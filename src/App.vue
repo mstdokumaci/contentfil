@@ -381,4 +381,13 @@ export default {
     font-style: italic;
   }
 }
+
+.fixed-action-btn {
+  position: fixed;
+  right: auto;
+  bottom: auto;
+  left: 50%;
+  top: 110px;
+  padding-left: 30%;
+}
 </style>
