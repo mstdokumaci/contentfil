@@ -53,7 +53,7 @@ const router = new VueRouter({
 
 const route = client.get('route', '')
 
-let offLineRoute
+let offlineRoute
 
 route.subscribe(to => {
   to = to.compute()
@@ -65,7 +65,7 @@ route.subscribe(to => {
 router.beforeEach((to, _, next) => {
   let type = client.get(['user', 'type'])
   if (!type) {
-    offLineRoute = to.path
+    offlineRoute = to.path
     return next()
   }
 
@@ -119,12 +119,14 @@ export default {
             email: this.user.email,
             token: this.user.token
           }))
-          this.timeout = setTimeout(() => {
-            this.$client.switchBranch(JSON.stringify({
-              type: 'anonymous',
-              id: this.anonymousId
-            }))
-          }, 1000)
+          if (this.$client.get(['user', 'type']).compute() !== 'real') {
+            this.timeout = setTimeout(() => {
+              this.$client.switchBranch(JSON.stringify({
+                type: 'anonymous',
+                id: this.anonymousId
+              }))
+            }, 1000)
+          }
         } else {
           this.$client.switchBranch(JSON.stringify({
             type: 'anonymous',
@@ -137,9 +139,9 @@ export default {
     subscription = this.$client.get('user', { type: 'none' }).subscribe(user => {
       if (user.get('type').compute() !== 'none') {
         user = user.serialize()
-        if (offLineRoute) {
-          route.set(offLineRoute)
-          offLineRoute = null
+        if (offlineRoute) {
+          route.set(offlineRoute)
+          offlineRoute = null
         }
         this.user = user
         if (user.tokenExpiresAt) {

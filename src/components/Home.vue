@@ -23,6 +23,18 @@
 <script>
 let subscription
 
+const truncate = str => {
+  if (str.length < 135) {
+    return str
+  }
+  const found = str.slice(120).match(/[\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u2028\u2029\u3000\uFEFF]/)
+  if (!found || found.index > 25) {
+    return str.slice(0, 125) + '...'
+  } else {
+    return str.slice(0, 120 + found.index) + '...'
+  }
+}
+
 export default {
   data() {
     return {
@@ -38,7 +50,7 @@ export default {
           key: key,
           title: el.firstChild && el.firstChild.textContent.length
             ? el.firstChild.textContent : `Untitled ${key.slice(0, 3)}`,
-          firstParagraph: el.childNodes && el.childNodes[1] && el.childNodes[1].textContent,
+          firstParagraph: el.childNodes && el.childNodes[1] && truncate(el.childNodes[1].textContent),
           date: (new Date(item.get('date').compute())).toUTCString(),
           author: item.get('author').compute()
         }

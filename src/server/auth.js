@@ -48,14 +48,13 @@ const loadUser = async (switcher, email, token, user) => {
       token,
       tokenExpiresAt: user.get('tokenExpiresAt').compute()
     })
+    userBranch.set({ route: '/me' })
   } else {
     userBranch.get('user').set({
       token,
       tokenExpiresAt: user.get('tokenExpiresAt').compute()
     })
   }
-
-  userBranch.set({ route: '/me' })
 
   return true
 }
