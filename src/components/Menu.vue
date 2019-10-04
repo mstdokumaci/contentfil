@@ -42,58 +42,60 @@
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      pages: [
-        {
-          title: 'My Profile',
-          path: '/me',
-          real: true
-        },
-        {
-          title: 'Login',
-          path: '/login',
-          anonymous: true
-        },
-        {
-          title: 'Signup',
-          path: '/signup',
-          anonymous: true
-        }
-      ]
-    }
-  },
-  props: ['user', 'anonymousId'],
-  computed: {
-    authenticated() {
-      return this.user.type === 'real'
-    }
-  },
-  methods: {
-    logout() {
-      this.$client.switchBranch(JSON.stringify({
-        type: 'anonymous',
-        id: this.anonymousId
-      }))
-      window.localStorage.removeItem('user')
+  export default {
+    data() {
+      return {
+        pages: [
+          {
+            title: 'My Profile',
+            path: '/me',
+            real: true
+          },
+          {
+            title: 'Login',
+            path: '/login',
+            anonymous: true
+          },
+          {
+            title: 'Signup',
+            path: '/signup',
+            anonymous: true
+          }
+        ]
+      }
     },
-    newStory() {
-      this.$client.get('draft').emit('create')
-    }
-  },
-}
+    props: ['user', 'anonymousId'],
+    computed: {
+      authenticated() {
+        return this.user.type === 'real'
+      }
+    },
+    methods: {
+      logout() {
+        this.$client.switchBranch(JSON.stringify({
+          type: 'anonymous',
+          id: this.anonymousId
+        }))
+        window.localStorage.removeItem('user')
+      },
+      newStory() {
+        this.$client.get('draft').emit('create')
+      }
+    },
+  }
 </script>
 
 <style scoped>
-.brand-logo {
-  margin-left: 1rem;
-}
-.tabs .btn {
-  margin: 5px 0;
-}
-.tabs .btn i {
-  height: 0;
-  line-height: 0;
-}
+  .brand-logo {
+    margin-left: 1rem;
+  }
+
+  .tabs .btn {
+    margin: 5px 0;
+  }
+
+  .tabs .btn i {
+    height: 0;
+    line-height: 0;
+  }
 </style>

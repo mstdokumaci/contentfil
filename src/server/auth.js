@@ -33,14 +33,14 @@ const createUser = (master, user, _, branchUser) => {
   const hash = crypto.scryptSync(password, salt, 64).toString('base64')
 
   auth.set({
-    [ email ]: {
+    [email]: {
       salt: salt.toString('base64'),
       hash,
       id
     }
   })
   master.get('author').set({
-    [ id ]: { name }
+    [id]: { name }
   })
   branchUser.set({ status: 'created' })
 }
@@ -50,10 +50,10 @@ const loadUser = async (switcher, email, token, user) => {
     email, new PersistRocksDB(`db/user/${email}`)
   )
 
-  if (userBranch.get([ 'user', 'type' ]) === undefined) {
+  if (userBranch.get(['user', 'type']) === undefined) {
     userBranch.get('user').set({
       type: 'real',
-      author: [ '@', 'author', user.get('id').compute() ],
+      author: ['@', 'author', user.get('id').compute()],
       email,
       token,
       tokenExpiresAt: user.get('tokenExpiresAt').compute()

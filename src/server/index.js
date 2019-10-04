@@ -31,7 +31,7 @@ createPersist(
           path: ['route']
         },
         {
-          path: [ 'draft', '*', 'content' ]
+          path: ['draft', '*', 'content']
         }
       ]
     }

@@ -40,55 +40,55 @@
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      name: '',
-      email: '',
-      password: '',
-      password2: '',
-      error: ''
-    }
-  },
-  props: [ 'user' ],
-  methods: {
-    signup() {
-      if (this.name.length < 3) {
-        this.error = 'Minimum email length is 3'
-      } else if (this.email.length < 5) {
-        this.error = 'Minimum email length is 5'
-      } else if (!~this.email.indexOf('@')) {
-        this.error = 'Invalid email'
-      } else if (this.password.length < 5) {
-        this.error = 'Minimum password length is 5'
-      } else if (this.password !== this.password2) {
-        this.error = 'Passwords should be same'
-      } else {
-        this.error = ''
+  export default {
+    data() {
+      return {
+        name: '',
+        email: '',
+        password: '',
+        password2: '',
+        error: ''
+      }
+    },
+    props: ['user'],
+    methods: {
+      signup() {
+        if (this.name.length < 3) {
+          this.error = 'Minimum email length is 3'
+        } else if (this.email.length < 5) {
+          this.error = 'Minimum email length is 5'
+        } else if (!~this.email.indexOf('@')) {
+          this.error = 'Invalid email'
+        } else if (this.password.length < 5) {
+          this.error = 'Minimum password length is 5'
+        } else if (this.password !== this.password2) {
+          this.error = 'Passwords should be same'
+        } else {
+          this.error = ''
 
-        const user = this.$client.get('user')
-        const listener = user.get('status', {}).on((_, stamp, status) => {
-          status = status.compute()
-          if (status === 'created') {
-            this.$client.switchBranch(JSON.stringify({
-              type: 'password',
-              email: this.email,
-              password: this.password
-            }))
-            listener.off()
-          } else if (status === 'error') {
-            this.error = user.get('error').compute()
-            listener.off()
-          }
-        })
+          const user = this.$client.get('user')
+          const listener = user.get('status', {}).on((_, stamp, status) => {
+            status = status.compute()
+            if (status === 'created') {
+              this.$client.switchBranch(JSON.stringify({
+                type: 'password',
+                email: this.email,
+                password: this.password
+              }))
+              listener.off()
+            } else if (status === 'error') {
+              this.error = user.get('error').compute()
+              listener.off()
+            }
+          })
 
-        user.emit('create', JSON.stringify({
-          name: this.name,
-          email: this.email,
-          password: this.password
-        }))
+          user.emit('create', JSON.stringify({
+            name: this.name,
+            email: this.email,
+            password: this.password
+          }))
+        }
       }
     }
   }
-}
 </script>
