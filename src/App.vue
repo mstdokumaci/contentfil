@@ -143,7 +143,11 @@
 
       subscription = this.$client.get('user', { type: 'none' }).subscribe(user => {
         if (user.get('type').compute() !== 'none') {
+          const author = user.get(['author'])
           user = user.serialize()
+          if (author) {
+            user.name = author.get('name').compute()
+          }
           if (offlineRoute) {
             route.set(offlineRoute)
             offlineRoute = null

@@ -1,5 +1,5 @@
 <template>
-  <router-view :draft-list="draftList" :published-list="publishedList"></router-view>
+  <router-view :user="user" :draft-list="draftList" :published-list="publishedList"></router-view>
 </template>
 
 <script>
@@ -13,6 +13,7 @@
         subscription: null
       }
     },
+    props: ['user'],
     created() {
       subscription = this.$client.get('draft', {}).subscribe(list => {
         const draftList = list.map((item, key) => {
