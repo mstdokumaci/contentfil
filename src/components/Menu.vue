@@ -5,7 +5,9 @@
       <ul class="right">
         <template v-if="authenticated">
           <li :class="{active: $route.path.startsWith('/me')}">
-            <router-link to="/me">{{user.email}}</router-link>
+            <router-link to="/me">
+              <i class="material-icons">person</i>
+            </router-link>
           </li>
           <li>
             <a class="btn waves-effect" @click="logout">
@@ -26,7 +28,10 @@
     <div v-if="$route.path.startsWith('/me')" class="nav-content blue-grey lighten-2">
       <ul class="tabs tabs-transparent">
         <li class="tab">
-          <router-link to="/me" :class="{active: $route.path === '/me'}">Drafts</router-link>
+          <router-link to="/me" :class="{active: $route.path === '/me'}">Profile</router-link>
+        </li>
+        <li class="tab">
+          <router-link to="/me/draft" :class="{active: $route.path === '/me/draft'}">Drafts</router-link>
         </li>
         <li class="tab">
           <router-link to="/me/published" :class="{active: $route.path === '/me/published'}">Published</router-link>
@@ -43,27 +48,6 @@
 
 <script>
   export default {
-    data() {
-      return {
-        pages: [
-          {
-            title: 'My Profile',
-            path: '/me',
-            real: true
-          },
-          {
-            title: 'Login',
-            path: '/login',
-            anonymous: true
-          },
-          {
-            title: 'Signup',
-            path: '/signup',
-            anonymous: true
-          }
-        ]
-      }
-    },
     props: ['user', 'anonymousId'],
     computed: {
       authenticated() {

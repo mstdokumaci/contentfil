@@ -1,11 +1,7 @@
 <template>
   <ul class="collection">
-    <router-link
-      class="collection-item truncate"
-      v-for="item in publishedList"
-      :key="item.key"
-      :to="`/story/${item.key}`"
-    >
+    <router-link class="collection-item truncate" v-for="item in publishedList" :key="item.key"
+      :to="`/story/${item.key}`">
       {{item.title}}
       <span class="secondary-content">
         {{item.date}}
@@ -16,7 +12,7 @@
 </template>
 
 <script>
-export default {
-  props: ['publishedList']
-}
+  export default {
+    props: ['publishedList']
+  }
 </script>

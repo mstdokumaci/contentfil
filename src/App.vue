@@ -13,9 +13,10 @@
   import Login from './components/Login'
   import Signup from './components/Signup'
   import Profile from './components/Profile'
-  import Draft from './components/Draft'
-  import Published from './components/Published'
-  import Editor from './components/Editor'
+  import ProfileIndex from './components/profile/Index'
+  import Draft from './components/profile/Draft'
+  import Editor from './components/profile/Editor'
+  import Published from './components/profile/Published'
   import Story from './components/Story'
 
   const router = new VueRouter({
@@ -30,16 +31,20 @@
         children: [
           {
             path: '',
-            component: Draft
+            component: ProfileIndex
           },
           {
-            path: 'published',
-            component: Published
+            path: 'draft',
+            component: Draft
           },
           {
             path: 'draft/:id',
             component: Editor,
             props: true
+          },
+          {
+            path: 'published',
+            component: Published
           }
         ]
       },

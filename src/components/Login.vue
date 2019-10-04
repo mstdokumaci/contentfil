@@ -26,39 +26,39 @@
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      email: '',
-      password: '',
-      error: ''
-    }
-  },
-  props: [ 'user' ],
-  methods: {
-    login() {
-      if (this.email.length < 5) {
-        this.error = 'Minimum email length is 5'
-      } else {
-        this.error = ''
+  export default {
+    data() {
+      return {
+        email: '',
+        password: '',
+        error: ''
+      }
+    },
+    props: ['user'],
+    methods: {
+      login() {
+        if (this.email.length < 5) {
+          this.error = 'Minimum email length is 5'
+        } else {
+          this.error = ''
 
-        const listener = this.$client
-          .get([ 'user', 'status' ], {})
-          .on((_, stamp, status) => {
-            status = status.compute()
-            if (status === 'error') {
-              this.error = this.$client.get(['user', 'error']).compute()
-              listener.off()
-            }
-          })
+          const listener = this.$client
+            .get(['user', 'status'], {})
+            .on((_, stamp, status) => {
+              status = status.compute()
+              if (status === 'error') {
+                this.error = this.$client.get(['user', 'error']).compute()
+                listener.off()
+              }
+            })
 
-        this.$client.switchBranch(JSON.stringify({
-          type: 'password',
-          email: this.email,
-          password: this.password
-        }))
+          this.$client.switchBranch(JSON.stringify({
+            type: 'password',
+            email: this.email,
+            password: this.password
+          }))
+        }
       }
     }
   }
-}
 </script>
