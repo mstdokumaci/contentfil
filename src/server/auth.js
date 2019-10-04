@@ -1,5 +1,6 @@
 const { createPersist } = require('stx')
 const { PersistRocksDB } = require('stx-persist-rocksdb')
+const { generateId } = require('./utils')
 const crypto = require('crypto')
 
 let auth
@@ -15,23 +16,31 @@ const setErrorStatus = (user, error) => {
   }
 }
 
-const createUser = (user, _, branchUser) => {
+const createUser = (master, user, _, branchUser) => {
   try {
     user = JSON.parse(user)
   } catch (e) {
     return setErrorStatus(branchUser, 'Malformed user data')
   }
-  const { email, password } = user
+  const { name, email, password } = user
   if (auth.get(email) !== undefined) {
     return setErrorStatus(branchUser, 'User exists')
   }
+
+  const id = generateId()
+
   const salt = crypto.randomBytes(64)
   const hash = crypto.scryptSync(password, salt, 64).toString('base64')
+
   auth.set({
     [ email ]: {
       salt: salt.toString('base64'),
-      hash
+      hash,
+      id
     }
+  })
+  master.get('author').set({
+    [ id ]: { name }
   })
   branchUser.set({ status: 'created' })
 }
@@ -44,6 +53,7 @@ const loadUser = async (switcher, email, token, user) => {
   if (userBranch.get([ 'user', 'type' ]) === undefined) {
     userBranch.get('user').set({
       type: 'real',
+      author: [ '@', 'author', user.get('id').compute() ],
       email,
       token,
       tokenExpiresAt: user.get('tokenExpiresAt').compute()
@@ -136,7 +146,7 @@ const switchBranch = async (fromBranch, branchKey, switcher) => {
   }
 }
 
-module.exports = {
-  createUser,
+module.exports = master => ({
+  createUser: createUser.bind(null, master),
   switchBranch
-}
+})

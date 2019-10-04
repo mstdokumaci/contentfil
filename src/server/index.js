@@ -1,21 +1,22 @@
 const { createPersist } = require('stx')
 const { PersistRocksDB } = require('stx-persist-rocksdb')
 
-const {
-  createUser,
-  switchBranch
-} = require('./auth')
-
 createPersist(
   {
     user: {},
     route: '',
+    author: {},
     draft: {},
     published: {}
   },
   new PersistRocksDB('db/master')
 )
   .then(master => {
+    const {
+      createUser,
+      switchBranch
+    } = require('./auth')(master)
+
     const {
       createDraft,
       publishDraft

@@ -1,9 +1,9 @@
 <template>
-    <div class="row">
+    <div class="row section">
       <div class="col s6" v-for="item in list" :key="item.key">
         <router-link :to="`/story/${item.key}`" tag="div" class="card blue-grey lighten-5">
           <div class="card-content">
-              <span class="card-title">
+              <span class="card-title truncate">
                 {{item.title}}
               </span>
               <p>{{item.firstParagraph}}</p>
@@ -52,7 +52,7 @@ export default {
             ? el.firstChild.textContent : `Untitled ${key.slice(0, 3)}`,
           firstParagraph: el.childNodes && el.childNodes[1] && truncate(el.childNodes[1].textContent),
           date: (new Date(item.get('date').compute())).toUTCString(),
-          author: item.get('author').compute()
+          author: item.get(['author', 'name']).compute()
         }
       })
     })
@@ -72,5 +72,6 @@ export default {
   font-size: 1.1rem;
   margin: 1rem 0;
   opacity: 0.8;
+  height: 5.1rem;
 }
 </style>

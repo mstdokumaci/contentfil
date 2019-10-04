@@ -1,7 +1,7 @@
 <template>
   <div class="collection">
     <router-link
-      class="collection-item"
+      class="collection-item truncate"
       v-for="item in draftList"
       :key="item.key"
       :to="`/me/draft/${item.key}`"

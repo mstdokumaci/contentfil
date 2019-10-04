@@ -5,6 +5,13 @@
     </div>
     <div class="row">
       <div class="input-field col s6 offset-s3">
+        <i class="material-icons prefix">person</i>
+        <input type="text" id="name" v-model="name" class="validate">
+        <label for="name">Name (public)</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s6 offset-s3">
         <i class="material-icons prefix">email</i>
         <input type="text" id="email" v-model="email" class="validate">
         <label for="email">E-mail</label>
@@ -36,6 +43,7 @@
 export default {
   data() {
     return {
+      name: '',
       email: '',
       password: '',
       password2: '',
@@ -45,7 +53,9 @@ export default {
   props: [ 'user' ],
   methods: {
     signup() {
-      if (this.email.length < 5) {
+      if (this.name.length < 3) {
+        this.error = 'Minimum email length is 3'
+      } else if (this.email.length < 5) {
         this.error = 'Minimum email length is 5'
       } else if (!~this.email.indexOf('@')) {
         this.error = 'Invalid email'
@@ -73,6 +83,7 @@ export default {
         })
 
         user.emit('create', JSON.stringify({
+          name: this.name,
           email: this.email,
           password: this.password
         }))

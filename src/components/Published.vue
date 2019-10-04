@@ -1,7 +1,7 @@
 <template>
   <ul class="collection">
     <router-link
-      class="collection-item"
+      class="collection-item truncate"
       v-for="item in publishedList"
       :key="item.key"
       :to="`/story/${item.key}`"
