@@ -10,14 +10,15 @@
   import client from './client'
   import Menu from './components/Menu'
   import Home from './components/Home'
-  import Login from './components/Login'
-  import Signup from './components/Signup'
+  import Login from './components/public/Login'
+  import Signup from './components/public/Signup'
+  import Story from './components/public/Story'
+  import Author from './components/public/Author'
   import Profile from './components/Profile'
   import ProfileIndex from './components/profile/Index'
   import Draft from './components/profile/Draft'
   import Editor from './components/profile/Editor'
   import Published from './components/profile/Published'
-  import Story from './components/Story'
 
   const router = new VueRouter({
     mode: 'history',
@@ -25,6 +26,16 @@
       { path: '/', component: Home },
       { path: '/login', component: Login },
       { path: '/signup', component: Signup },
+      {
+        path: '/story/:id',
+        component: Story,
+        props: true
+      },
+      {
+        path: '/author/:id',
+        component: Author,
+        props: true
+      },
       {
         path: '/me',
         component: Profile,
@@ -47,11 +58,6 @@
             component: Published
           }
         ]
-      },
-      {
-        path: '/story/:id',
-        component: Story,
-        props: true
       }
     ]
   })

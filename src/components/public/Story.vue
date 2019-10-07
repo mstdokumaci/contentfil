@@ -1,21 +1,32 @@
 <template>
-  <div class="row">
-    <div class="fixed-action-btn" v-if="hasDraft">
-      <router-link class="btn btn-floating btn-large waves-effect" :to='`/me/draft/${id}`' tag="button">
-        <i class="material-icons">edit</i>
-      </router-link>
+  <div>
+    <div class="row">
+      <div class="fixed-action-btn" v-if="hasDraft">
+        <router-link class="btn btn-floating btn-large waves-effect" :to="`/me/draft/${id}`" tag="button">
+          <i class="material-icons">edit</i>
+        </router-link>
+      </div>
+      <div v-html="content" class="editor__content">
+      </div>
     </div>
-    <div v-html="content" class="editor__content">
+    <div class="row">
+      by
+      <router-link :to="`/author/${authorId}`">
+        {{authorName}}
+      </router-link>
     </div>
   </div>
 </template>
+
 <script>
   let storySubscription, draftSubscription
 
   export default {
     data() {
       return {
-        content: '',
+        story: '',
+        authorId: '',
+        authorName: '',
         hasDraft: false
       }
     },
@@ -27,13 +38,15 @@
       storySubscription = this.$client
         .get('published', {})
         .subscribe({ keys: [this.id] }, published => {
-          const content = published.get([this.id, 'content'])
-          if (content) {
+          const story = published.get(this.id)
+          if (story) {
             if (loadTimeout) {
               clearTimeout(loadTimeout)
               loadTimeout = null
             }
-            this.content = content.compute()
+            this.content = story.get('content').compute()
+            this.authorId = story.get('author').serialize().pop()
+            this.authorName = story.get(['author', 'name']).compute()
           }
         })
       draftSubscription = this.$client

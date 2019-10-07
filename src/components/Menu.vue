@@ -1,53 +1,71 @@
 <template>
-  <nav class="nav-extended">
-    <div class="nav-wrapper blue-grey lighten-1">
-      <router-link to="/" class="brand-logo">Foraa</router-link>
-      <ul class="right">
-        <template v-if="authenticated">
-          <li :class="{active: $route.path.startsWith('/me')}">
-            <router-link to="/me">
-              <i class="material-icons">person</i>
-            </router-link>
+  <div>
+    <nav class="nav-extended" v-if="navigationVisible">
+      <div class="nav-wrapper blue-grey lighten-1">
+        <router-link to="/" class="brand-logo">Foraa</router-link>
+        <ul class="right">
+          <template v-if="authenticated">
+            <li :class="{active: $route.path.startsWith('/me')}">
+              <router-link to="/me">
+                <i class="material-icons">person</i>
+              </router-link>
+            </li>
+            <li>
+              <a class="btn waves-effect" @click="logout">
+                <i class="material-icons">exit_to_app</i>
+              </a>
+            </li>
+          </template>
+          <template v-else>
+            <li :class="{active: $route.path === '/login'}">
+              <router-link to="/login">Login</router-link>
+            </li>
+            <li :class="{active: $route.path === '/signup'}">
+              <router-link to="/signup">Sign up</router-link>
+            </li>
+          </template>
+        </ul>
+      </div>
+      <div v-if="$route.path.startsWith('/me')" class="nav-content blue-grey lighten-2">
+        <ul class="tabs tabs-transparent">
+          <li class="tab">
+            <router-link to="/me" :class="{active: $route.path === '/me'}">Profile</router-link>
+          </li>
+          <li class="tab">
+            <router-link to="/me/draft" :class="{active: $route.path === '/me/draft'}">Drafts</router-link>
+          </li>
+          <li class="tab">
+            <router-link to="/me/published" :class="{active: $route.path === '/me/published'}">Published</router-link>
           </li>
           <li>
-            <a class="btn waves-effect" @click="logout">
-              <i class="material-icons">exit_to_app</i>
-            </a>
+            <button class="btn waves-effect" @click="newStory">
+              <i class="material-icons">note_add</i>
+            </button>
           </li>
-        </template>
-        <template v-else>
-          <li :class="{active: $route.path === '/login'}">
-            <router-link to="/login">Login</router-link>
+          <li class="right" v-if="$route.path.startsWith('/me/draft/') && navigationVisible === true">
+            <button class="btn waves-effect" @click="navigationVisible = false">
+              <i class="material-icons">expand_less</i>
+            </button>
           </li>
-          <li :class="{active: $route.path === '/signup'}">
-            <router-link to="/signup">Sign up</router-link>
-          </li>
-        </template>
-      </ul>
+        </ul>
+      </div>
+    </nav>
+    <div class="fixed-action-btn" v-if="navigationVisible === false">
+      <button class="btn-floating btn-large waves-effect tooltipped" @click="navigationVisible = true"
+        data-tooltip="Show navigation" data-position="left">
+        <i class="material-icons">expand_more</i>
+      </button>
     </div>
-    <div v-if="$route.path.startsWith('/me')" class="nav-content blue-grey lighten-2">
-      <ul class="tabs tabs-transparent">
-        <li class="tab">
-          <router-link to="/me" :class="{active: $route.path === '/me'}">Profile</router-link>
-        </li>
-        <li class="tab">
-          <router-link to="/me/draft" :class="{active: $route.path === '/me/draft'}">Drafts</router-link>
-        </li>
-        <li class="tab">
-          <router-link to="/me/published" :class="{active: $route.path === '/me/published'}">Published</router-link>
-        </li>
-        <li>
-          <button class="btn waves-effect" @click="newStory">
-            <i class="material-icons">note_add</i>
-          </button>
-        </li>
-      </ul>
-    </div>
-  </nav>
+  </div>
 </template>
 
 <script>
   export default {
+    data() {
+      return {
+        navigationVisible: true
+      }
+    },
     props: ['user', 'anonymousId'],
     computed: {
       authenticated() {
@@ -65,7 +83,7 @@
       newStory() {
         this.$client.get('draft').emit('create')
       }
-    },
+    }
   }
 </script>
 
@@ -75,11 +93,15 @@
   }
 
   .tabs .btn {
-    margin: 5px 0;
+    margin: 5px 15px;
   }
 
   .tabs .btn i {
     height: 0;
     line-height: 0;
+  }
+
+  .fixed-action-btn {
+    top: 45px;
   }
 </style>
