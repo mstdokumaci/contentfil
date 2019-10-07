@@ -1,48 +1,72 @@
 <template>
-  <router-view :user="user" :draft-list="draftList" :published-list="publishedList"></router-view>
+  <router-view :user="user" :author="author" :draft-list="draftList" :published-list="publishedList" />
 </template>
 
 <script>
-  let subscription
+  let draftSubscription, authorSubscription, publishedSubscription
 
   export default {
     data() {
       return {
         draftList: [],
         publishedList: [],
-        subscription: null
+        author: {}
       }
     },
     props: ['user'],
     created() {
-      subscription = this.$client.get('draft', {}).subscribe(list => {
-        const draftList = list.map((item, key) => {
-          const published = item.get('published')
-          const el = document.createElement('div')
+      draftSubscription = this.$client.get('draft', {}).subscribe(list => {
+        this.draftList = list.map((item, key) => {
           const content = item.get('content').compute()
+          const publishedContent = item.get(['published', 'content'])
+          if (publishedContent && content === publishedContent.compute()) {
+            return
+          }
+          const el = document.createElement('div')
           el.innerHTML = content
           return {
             key: key,
             title: el.firstChild && el.firstChild.textContent.length
-              ? el.firstChild.textContent.trim() : `Untitled ${key.slice(0, 3)}`,
-            published: published,
-            publishable: !published || content !== published.get('content').compute()
+              ? el.firstChild.textContent.trim() : `Untitled ${key.slice(0, 3)}`
           }
         }).filter(item => item)
-        this.draftList = draftList.filter(item => item.publishable)
-        this.publishedList = draftList.filter(item => item.published).map(item => {
-          const published = item.published
-          const el = document.createElement('div')
-          el.innerHTML = published.get('content').compute()
-          return {
-            key: item.key,
-            title: el.firstChild && el.firstChild.textContent.length
-              ? el.firstChild.textContent.trim() : `Untitled ${key.slice(0, 3)}`,
-            date: (new Date(published.get('date').compute())).toUTCString()
+      })
+
+      authorSubscription = this.$client.get('user')
+        .subscribe({ keys: ['author'], depth: 1 }, user => {
+          const author = user.get('author')
+          if (author) {
+            this.author = {
+              id: author.serialize().pop(),
+              name: author.get('name').compute(),
+            }
+
+            if (!publishedSubscription) {
+              publishedSubscription = author.get('published')
+                .subscribe({ depth: 2 }, list => {
+                  this.publishedList = list.map((item, key) => {
+                    const el = document.createElement('div')
+                    const content = item.get('content').compute()
+                    el.innerHTML = content
+                    return {
+                      key: key,
+                      title: el.firstChild && el.firstChild.textContent.length
+                        ? el.firstChild.textContent.trim() : `Untitled ${key.slice(0, 3)}`,
+                      date: (new Date(item.get('date').compute())).toUTCString()
+                    }
+                  })
+                })
+            }
           }
         })
-      })
     },
-    beforeDestroy: () => subscription && subscription.unsubscribe()
+    beforeDestroy: () => {
+      draftSubscription && draftSubscription.unsubscribe()
+      draftSubscription = null
+      authorSubscription && authorSubscription.unsubscribe()
+      authorSubscription = null
+      publishedSubscription && publishedSubscription.unsubscribe()
+      publishedSubscription = null
+    }
   }
 </script>

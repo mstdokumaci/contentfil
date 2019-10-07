@@ -6,8 +6,7 @@
           <i class="material-icons">edit</i>
         </router-link>
       </div>
-      <div v-html="content" class="editor__content">
-      </div>
+      <div v-html="content" class="editor__content" />
     </div>
     <div class="row">
       by
@@ -35,6 +34,7 @@
       let loadTimeout = setTimeout(() => {
         this.$router.push('/')
       }, 500)
+
       storySubscription = this.$client
         .get('published', {})
         .subscribe({ keys: [this.id] }, published => {
@@ -49,10 +49,11 @@
             this.authorName = story.get(['author', 'name']).compute()
           }
         })
+
       draftSubscription = this.$client
         .get('draft', {})
         .subscribe({ keys: [this.id] }, draft => {
-          if (draft && draft.get([this.id, 'content'])) {
+          if (draft.get(this.id)) {
             this.hasDraft = true
             setTimeout(() => {
               draftSubscription.unsubscribe()
@@ -63,7 +64,9 @@
     },
     beforeDestroy: () => {
       storySubscription && storySubscription.unsubscribe()
+      storySubscription = null
       draftSubscription && draftSubscription.unsubscribe()
+      draftSubscription = null
     }
   }
 </script>

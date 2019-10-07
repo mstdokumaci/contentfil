@@ -137,7 +137,8 @@
     },
     beforeDestroy() {
       this.editor.destroy()
-      subscription.unsubscribe()
+      subscription && subscription.unsubscribe()
+      subscription = null
     }
   }
 </script>

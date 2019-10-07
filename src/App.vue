@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <navigation-menu :user="user" :anonymous-id="anonymousId" />
-    <router-view :user="user"></router-view>
+    <router-view :user="user" />
   </div>
 </template>
 
@@ -147,13 +147,9 @@
         }
       })
 
-      subscription = this.$client.get('user', { type: 'none' }).subscribe(user => {
+      subscription = this.$client.get('user', { type: 'none' }).subscribe({ excludeKeys: ['author'] }, user => {
         if (user.get('type').compute() !== 'none') {
-          const author = user.get(['author'])
           user = user.serialize()
-          if (author) {
-            user.name = author.get('name').compute()
-          }
           if (offlineRoute) {
             route.set(offlineRoute)
             offlineRoute = null
@@ -173,7 +169,10 @@
         }
       })
     },
-    beforeDestroy: () => subscription && subscription.unsubscribe(),
+    beforeDestroy: () => {
+      subscription && subscription.unsubscribe()
+      subscription = null
+    },
     router
   }
 </script>

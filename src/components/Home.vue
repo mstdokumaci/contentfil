@@ -57,7 +57,10 @@
         })
       })
     },
-    beforeDestroy: () => subscription && subscription.unsubscribe()
+    beforeDestroy: () => {
+      subscription && subscription.unsubscribe()
+      subscription = null
+    }
   }
 </script>
 

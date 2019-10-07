@@ -40,7 +40,7 @@ const createUser = (master, user, _, branchUser) => {
     }
   })
   master.get('author').set({
-    [id]: { name }
+    [id]: { name, published: {} }
   })
   branchUser.set({ status: 'created' })
 }

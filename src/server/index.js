@@ -19,13 +19,17 @@ createPersist(
 
     const {
       createDraft,
-      publishDraft
+      deleteDraft,
+      publishDraft,
+      unPublishStory
     } = require('./story')(master)
 
     master.branch.newBranchMiddleware = newBranch => {
       newBranch.get('user').on('create', createUser)
       newBranch.get('draft').on('create', createDraft)
+      newBranch.get('draft').on('delete', deleteDraft)
       newBranch.get('draft').on('publish', publishDraft)
+      newBranch.get('draft').on('unpublish', unPublishStory)
       newBranch.branch.clientCanUpdate = [
         {
           path: ['route']
