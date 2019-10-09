@@ -23,7 +23,7 @@
   export default {
     data() {
       return {
-        story: '',
+        content: '',
         authorId: '',
         authorName: '',
         hasDraft: false

@@ -15,7 +15,7 @@
     },
     props: ['user'],
     created() {
-      draftSubscription = this.$client.get('draft', {}).subscribe(list => {
+      draftSubscription = this.$client.get('draft', {}).subscribe({ depth: 3 }, list => {
         this.draftList = list.map((item, key) => {
           const content = item.get('content').compute()
           const publishedContent = item.get(['published', 'content'])
@@ -33,7 +33,7 @@
       })
 
       authorSubscription = this.$client.get('user')
-        .subscribe({ keys: ['author'], depth: 1 }, user => {
+        .subscribe({ keys: ['author'], depth: 2 }, user => {
           const author = user.get('author')
           if (author) {
             this.author = {
@@ -41,8 +41,9 @@
               name: author.get('name').compute(),
             }
 
-            if (!publishedSubscription) {
-              publishedSubscription = author.get('published')
+            const published = author.get('published')
+            if (!publishedSubscription && published) {
+              publishedSubscription = published
                 .subscribe({ depth: 2 }, list => {
                   this.publishedList = list.map((item, key) => {
                     const el = document.createElement('div')

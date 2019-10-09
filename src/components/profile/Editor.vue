@@ -117,14 +117,17 @@
         .get('draft', {})
         .subscribe({ keys: [this.id] }, draft => {
           const content = draft.get([this.id, 'content'])
-          if (loadTimeout && content) {
-            clearTimeout(loadTimeout)
-            loadTimeout = null
-          }
-          if (!this.updating && content !== void 0 && content.compute() !== '') {
-            const { from, to } = this.editor.resolveSelection()
-            this.editor.setContent(content.compute())
-            this.editor.setSelection(from, to)
+          if (content) {
+            if (loadTimeout) {
+              clearTimeout(loadTimeout)
+              loadTimeout = null
+            }
+
+            if (!this.updating && content.compute() !== '') {
+              const { from, to } = this.editor.resolveSelection()
+              this.editor.setContent(content.compute())
+              this.editor.setSelection(from, to)
+            }
           }
           const published = draft.get([this.id, 'published'])
           this.published = published && content

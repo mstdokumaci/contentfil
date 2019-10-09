@@ -56,9 +56,9 @@ const unPublishStory = (master, id, __, branchDraft) => {
     return
   }
   const authorId = branchDraft.root().get(['user', 'author']).serialize().pop()
-  master.get(['published', id]).set(null)
   master.get(['author', authorId, 'published', id]).set(null)
   draft.get('published').set(null)
+  master.get(['published', id]).set(null)
 }
 
 module.exports = master => ({
