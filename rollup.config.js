@@ -15,7 +15,7 @@ let plugins = [
   }),
   resolve({
     browser: true,
-    extensions: [ '.mjs', '.js', '.vue', '.json' ]
+    extensions: ['.mjs', '.js', '.vue', '.json']
   }),
   commonjs(),
   globals(),
