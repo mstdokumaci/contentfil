@@ -2,9 +2,21 @@
   <div>
     <div class="row">
       <div class="fixed-action-btn" v-if="hasDraft">
-        <router-link class="btn btn-floating btn-large waves-effect" :to="`/me/draft/${id}`" tag="button">
-          <i class="material-icons">edit</i>
-        </router-link>
+        <a class="btn-floating btn-large waves-effect">
+          <i class="large material-icons">menu</i>
+        </a>
+        <ul>
+          <li>
+            <button class="btn btn-floating waves-effect" @click="unpublish">
+              <i class="material-icons">delete</i>
+            </button>
+          </li>
+          <li>
+            <router-link class="btn btn-floating waves-effect" :to="`/me/draft/${id}`">
+              <i class="material-icons">edit</i>
+            </router-link>
+          </li>
+        </ul>
       </div>
       <div v-html="content" class="editor__content" />
     </div>
@@ -58,9 +70,18 @@
             setTimeout(() => {
               draftSubscription.unsubscribe()
               draftSubscription = null
+              M.FloatingActionButton.init(
+                document.querySelectorAll('.fixed-action-btn'),
+                { direction: 'bottom' }
+              )
             })
           }
         })
+    },
+    methods: {
+      unpublish() {
+        this.$client.get('draft').emit('unpublish', this.id)
+      }
     },
     beforeDestroy: () => {
       storySubscription && storySubscription.unsubscribe()

@@ -179,7 +179,7 @@
 
 <style lang="scss">
   .editor__content {
-    max-width: 40rem;
+    max-width: 50rem;
     margin: 2rem auto;
 
     * {
@@ -402,8 +402,7 @@
     position: fixed;
     right: auto;
     bottom: auto;
-    left: 50%;
-    top: 110px;
-    padding-left: 30%;
+    left: 80%;
+    top: 125px;
   }
 </style>

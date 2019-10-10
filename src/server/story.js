@@ -22,8 +22,10 @@ const deleteDraft = (id, __, branchDraft) => {
     draft.get('content').set(
       published.get('content').compute()
     )
+    branchDraft.root().get('route').set(`/story/${id}`)
   } else {
     draft.set(null)
+    branchDraft.root().get('route').set('/me')
   }
 }
 
@@ -59,6 +61,7 @@ const unPublishStory = (master, id, __, branchDraft) => {
   master.get(['author', authorId, 'published', id]).set(null)
   draft.get('published').set(null)
   master.get(['published', id]).set(null)
+  branchDraft.root().get('route').set(`/me/draft/${id}`)
 }
 
 module.exports = master => ({

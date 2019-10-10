@@ -1,10 +1,22 @@
 <template>
   <div class="editor" auto-focus="1">
     <div class="fixed-action-btn">
-      <button @click="publish" :disabled="published" class="btn-floating btn-large waves-effect tooltipped"
-        :data-tooltip="`Last published: ${publishDate}`" data-position="left">
-        <i class="material-icons">publish</i>
-      </button>
+      <a class="btn-floating btn-large waves-effect">
+        <i class="large material-icons">menu</i>
+      </a>
+      <ul>
+        <li>
+          <button class="btn-floating waves-effect" @click="deleteDraft">
+            <i class="material-icons">delete</i>
+          </button>
+        </li>
+        <li>
+          <button class="btn-floating waves-effect tooltipped" @click="publish" :disabled="published"
+            :data-tooltip="`Last published: ${publishDate}`" data-position="left">
+            <i class="material-icons">publish</i>
+          </button>
+        </li>
+      </ul>
     </div>
     <editor-menu-bubble :editor="editor" :keep-in-bounds="false" v-slot="{ commands, isActive, menu }">
       <div class="menububble" :class="{ 'is-active': menu.isActive }"
@@ -107,6 +119,9 @@
       },
       publish() {
         this.$client.get('draft').emit('publish', this.id)
+      },
+      deleteDraft() {
+        this.$client.get('draft').emit('delete', this.id)
       }
     },
     created() {
@@ -136,6 +151,10 @@
         });
     },
     mounted() {
+      M.FloatingActionButton.init(
+        document.querySelectorAll('.fixed-action-btn'),
+        { direction: 'bottom' }
+      )
       M.Tooltip.init(document.querySelectorAll('.tooltipped'))
     },
     beforeDestroy() {

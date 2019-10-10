@@ -13,7 +13,7 @@
     "test": "standard --fix"
   },
   "dependencies": {
-    "stx": "^0.6.4",
+    "stx": "^0.6.9",
     "stx-persist-rocksdb": "0.0.5",
     "tiptap": "^1.25.0",
     "tiptap-extensions": "^1.25.0",
