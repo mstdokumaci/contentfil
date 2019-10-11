@@ -29,7 +29,8 @@
       <div v-if="$route.path.startsWith('/me')" class="nav-content blue-grey lighten-3">
         <ul class="tabs tabs-transparent">
           <li class="tab">
-            <router-link to="/me" :class="{active: $route.path === '/me'}">Profile</router-link>
+            <router-link to="/me" :class="{active: $route.path === '/me'}">Profile
+            </router-link>
           </li>
           <li class="tab">
             <router-link to="/me/draft" :class="{active: $route.path === '/me/draft'}">Drafts</router-link>
@@ -88,7 +89,7 @@
   }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .brand-logo {
     margin-left: 1rem;
   }
@@ -100,6 +101,15 @@
   .tabs .btn i {
     height: 0;
     line-height: 0;
+  }
+
+  .tabs .tab a {
+    color: #789;
+  }
+
+  .tabs .tab a:hover,
+  .tabs .tab a.active {
+    color: #456;
   }
 
   .fixed-action-btn {

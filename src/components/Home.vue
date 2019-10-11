@@ -1,7 +1,7 @@
 <template>
   <div class="row section">
     <div class="col s6" v-for="item in list" :key="item.key">
-      <router-link :to="`/story/${item.key}`" tag="div" class="card blue-grey lighten-5">
+      <router-link :to="`/story/${item.key}`" tag="div" class="card grey lighten-5">
         <div class="card-content">
           <span class="card-title truncate">
             {{item.title}}
