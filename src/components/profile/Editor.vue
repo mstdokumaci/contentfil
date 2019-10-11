@@ -11,8 +11,8 @@
           </button>
         </li>
         <li>
-          <button class="btn-floating waves-effect tooltipped" @click="publish" :disabled="published"
-            :data-tooltip="`Last published: ${publishDate}`" data-position="left">
+          <button class="btn-floating waves-effect" @click="publish" :disabled="published"
+            :title="`Last published: ${publishDate}`">
             <i class="material-icons">publish</i>
           </button>
         </li>
@@ -147,7 +147,7 @@
           const published = draft.get([this.id, 'published'])
           this.published = published && content
             && content.compute() === published.get('content').compute()
-          this.publishDate = published ? (new Date(published.get('date').compute())).toUTCString() : 'Never'
+          this.publishDate = published ? (new Date(published.get('date').compute())).toISOString() : 'Never'
         });
     },
     mounted() {
@@ -155,7 +155,6 @@
         document.querySelectorAll('.fixed-action-btn'),
         { direction: 'bottom' }
       )
-      M.Tooltip.init(document.querySelectorAll('.tooltipped'))
     },
     beforeDestroy() {
       this.editor.destroy()

@@ -7,7 +7,7 @@
             {{item.title}}
           </span>
           <p>{{item.firstParagraph}}</p>
-          <span class="author">
+          <span class="author truncate">
             by {{item.author}}
           </span>
           <span class="date right">
@@ -42,19 +42,26 @@
       }
     },
     created() {
-      subscription = this.$client.get('published', {}).subscribe(list => {
-        this.list = list.map((item, key) => {
+      subscription = this.$client.get('published', {}).subscribe({
+        sort: { path: ['date'], type: Number, desc: true },
+        limit: 6
+      }, list => {
+        list = list.map((item, key) => {
           const el = document.createElement('div')
           el.innerHTML = item.get('content').compute()
+          const timestamp = item.get('date').compute()
           return {
             key: key,
             title: el.firstChild && el.firstChild.textContent.length
               ? el.firstChild.textContent : `Untitled ${key.slice(0, 3)}`,
             firstParagraph: el.childNodes && el.childNodes[1] && truncate(el.childNodes[1].textContent),
-            date: (new Date(item.get('date').compute())).toUTCString(),
+            timestamp,
+            date: (new Date(timestamp)).toISOString(),
             author: item.get(['author', 'name']).compute()
           }
         })
+        list.sort((a, b) => b.timestamp - a.timestamp)
+        this.list = list
       })
     },
     beforeDestroy: () => {
@@ -78,5 +85,10 @@
     margin: 1rem 0;
     opacity: 0.8;
     height: 5.1rem;
+  }
+
+  .card-content .author {
+    display: inline-block;
+    max-width: 60%;
   }
 </style>

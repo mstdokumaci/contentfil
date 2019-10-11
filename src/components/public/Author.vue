@@ -46,17 +46,21 @@
             if (!publishedSubscription) {
               publishedSubscription = author.get('published')
                 .subscribe({ depth: 2 }, list => {
-                  this.publishedList = list.map((item, key) => {
+                  const publishedList = list.map((item, key) => {
                     const el = document.createElement('div')
                     const content = item.get('content').compute()
                     el.innerHTML = content
+                    const timestamp = item.get('date').compute()
                     return {
                       key: key,
                       title: el.firstChild && el.firstChild.textContent.length
                         ? el.firstChild.textContent.trim() : `Untitled ${key.slice(0, 3)}`,
-                      date: (new Date(item.get('date').compute())).toUTCString()
+                      timestamp,
+                      date: (new Date(timestamp)).toISOString()
                     }
                   })
+                  publishedList.sort((a, b) => b.timestamp - a.timestamp)
+                  this.publishedList = publishedList
                 })
             }
           }
