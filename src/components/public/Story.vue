@@ -2,17 +2,19 @@
   <div>
     <div class="row">
       <div class="fixed-action-btn" v-if="hasDraft">
-        <a class="btn-floating btn-large waves-effect">
+        <a class="btn-floating btn-large waves-effect blue-grey lighten-2">
           <i class="large material-icons">menu</i>
         </a>
         <ul>
           <li>
-            <button class="btn btn-floating waves-effect" title="Unpublish story" @click="unpublish">
+            <button class="btn btn-floating waves-effect blue-grey lighten-2" title="Unpublish story"
+              @click="unpublish">
               <i class="material-icons">delete</i>
             </button>
           </li>
           <li>
-            <router-link class="btn btn-floating waves-effect" title="Edit story" :to="`/me/draft/${id}`">
+            <router-link class="btn btn-floating waves-effect blue-grey lighten-2" title="Edit story"
+              :to="`/me/draft/${id}`">
               <i class="material-icons">edit</i>
             </router-link>
           </li>
