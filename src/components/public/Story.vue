@@ -7,12 +7,12 @@
         </a>
         <ul>
           <li>
-            <button class="btn btn-floating waves-effect" @click="unpublish">
+            <button class="btn btn-floating waves-effect" title="Unpublish story" @click="unpublish">
               <i class="material-icons">delete</i>
             </button>
           </li>
           <li>
-            <router-link class="btn btn-floating waves-effect" :to="`/me/draft/${id}`">
+            <router-link class="btn btn-floating waves-effect" title="Edit story" :to="`/me/draft/${id}`">
               <i class="material-icons">edit</i>
             </router-link>
           </li>

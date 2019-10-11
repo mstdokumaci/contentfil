@@ -6,13 +6,13 @@
       </a>
       <ul>
         <li>
-          <button class="btn-floating waves-effect" @click="deleteDraft">
+          <button class="btn-floating waves-effect" @click="deleteDraft" title="Delete draft">
             <i class="material-icons">delete</i>
           </button>
         </li>
         <li>
-          <button class="btn-floating waves-effect" @click="publish" :disabled="published"
-            :title="`Last published: ${publishDate}`">
+          <button class="btn-floating waves-effect" :title="`Last published: ${publishDate}`" @click="publish"
+            :disabled="published">
             <i class="material-icons">publish</i>
           </button>
         </li>

@@ -6,12 +6,12 @@
         <ul class="right">
           <template v-if="authenticated">
             <li :class="{active: $route.path.startsWith('/me')}">
-              <router-link to="/me">
+              <router-link to="/me" title="My Profile">
                 <i class="material-icons">person</i>
               </router-link>
             </li>
             <li>
-              <a class="btn waves-effect" @click="logout">
+              <a class="btn waves-effect" title="Logout" @click="logout">
                 <i class="material-icons">exit_to_app</i>
               </a>
             </li>
@@ -38,12 +38,12 @@
             <router-link to="/me/published" :class="{active: $route.path === '/me/published'}">Published</router-link>
           </li>
           <li>
-            <button class="btn waves-effect" @click="newStory">
+            <button class="btn waves-effect" title="New Story" @click="newStory">
               <i class="material-icons">note_add</i>
             </button>
           </li>
           <li class="right" v-if="$route.path.startsWith('/me/draft/') && navigationVisible === true">
-            <button class="btn waves-effect" @click="navigationVisible = false">
+            <button class="btn waves-effect" title="Hide navigation" @click="navigationVisible = false">
               <i class="material-icons">expand_less</i>
             </button>
           </li>
@@ -51,8 +51,7 @@
       </div>
     </nav>
     <div class="fixed-action-btn" v-if="navigationVisible === false">
-      <button class="btn-floating btn-large waves-effect tooltipped" @click="navigationVisible = true"
-        data-tooltip="Show navigation" data-position="left">
+      <button class="btn-floating btn-large waves-effect" title="Show navigation" @click="navigationVisible = true">
         <i class="material-icons">expand_more</i>
       </button>
     </div>
