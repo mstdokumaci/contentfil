@@ -119,6 +119,7 @@ const authByToken = async (email, token, switcher) => {
 const switchBranch = async (fromBranch, branchKey, switcher) => {
   let authRequest
   const branchUser = fromBranch.get('user')
+  branchUser.set({ status: 'loginStarted', error: null })
   try {
     authRequest = JSON.parse(branchKey)
   } catch (e) {
