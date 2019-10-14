@@ -1,7 +1,7 @@
 <template>
   <div>
     <nav class="nav-extended" v-if="navigationVisible">
-      <div class="nav-wrapper blue-grey lighten-2">
+      <div class="nav-wrapper brown lighten-4">
         <router-link to="/" class="brand-logo">
           <img src="/assets/media/logo.png">
         </router-link>
@@ -13,7 +13,7 @@
               </router-link>
             </li>
             <li>
-              <a class="btn waves-effect blue-grey lighten-1" title="Logout" @click="logout">
+              <a class="btn waves-effect brown lighten-3" title="Logout" @click="logout">
                 <i class="material-icons">exit_to_app</i>
               </a>
             </li>
@@ -28,7 +28,7 @@
           </template>
         </ul>
       </div>
-      <div v-if="$route.path.startsWith('/me')" class="nav-content blue-grey lighten-3">
+      <div v-if="$route.path.startsWith('/me')" class="nav-content brown lighten-5">
         <ul class="tabs tabs-transparent">
           <li class="tab">
             <router-link to="/me" :class="{active: $route.path === '/me'}">Profile
@@ -41,13 +41,12 @@
             <router-link to="/me/published" :class="{active: $route.path === '/me/published'}">Published</router-link>
           </li>
           <li>
-            <button class="btn waves-effect blue-grey lighten-1" title="New Story" @click="newStory">
+            <button class="btn waves-effect brown lighten-3" title="New Story" @click="newStory">
               <i class="material-icons">note_add</i>
             </button>
           </li>
           <li class="right" v-if="$route.path.startsWith('/me/draft/') && navigationVisible === true">
-            <button class="btn waves-effect blue-grey lighten-1" title="Hide navigation"
-              @click="navigationVisible = false">
+            <button class="btn waves-effect brown lighten-3" title="Hide navigation" @click="navigationVisible = false">
               <i class="material-icons">expand_less</i>
             </button>
           </li>
@@ -55,7 +54,7 @@
       </div>
     </nav>
     <div class="fixed-action-btn" v-if="navigationVisible === false">
-      <button class="btn-floating btn-large waves-effect blue-grey lighten-2" title="Show navigation"
+      <button class="btn-floating btn-large waves-effect brown lighten-3" title="Show navigation"
         @click="navigationVisible = true">
         <i class="material-icons">expand_more</i>
       </button>
@@ -114,17 +113,32 @@
     margin: 13px 0;
   }
 
-  .tabs .btn {
-    margin: 5px 15px;
-  }
+  .tabs {
+    .tab a {
+      color: #998;
+    }
 
-  .tabs .btn i {
-    height: 0;
-    line-height: 0;
-  }
+    .tab a:hover,
+    .tab a.active {
+      color: #776;
+    }
 
+    .btn {
+      margin: 5px 15px;
+    }
+
+    .btn i {
+      height: 0;
+      line-height: 0;
+    }
+  }
 
   .fixed-action-btn {
     top: 45px;
+  }
+</style>
+<style>
+  .tabs.tabs-transparent .indicator {
+    background-color: #89a;
   }
 </style>

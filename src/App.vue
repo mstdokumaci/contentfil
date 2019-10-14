@@ -250,6 +250,7 @@
     h1,
     h2,
     h3 {
+      color: #012;
       opacity: 0.75;
       line-height: 1.3
     }
@@ -404,5 +405,21 @@
     bottom: auto;
     left: 80%;
     top: 125px;
+  }
+
+  .collection {
+    border-color: #e0e0d0;
+
+    a.collection-item {
+      color: #998;
+    }
+
+    a.collection-item:not(.active):hover {
+      background-color: #f0f0e9;
+    }
+
+    .secondary-content {
+      color: #bba;
+    }
   }
 </style>

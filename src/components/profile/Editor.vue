@@ -1,17 +1,17 @@
 <template>
   <div class="editor" auto-focus="1">
     <div class="fixed-action-btn">
-      <a class="btn-floating btn-large waves-effect blue-grey lighten-2">
+      <a class="btn-floating btn-large waves-effect brown lighten-3">
         <i class="large material-icons">menu</i>
       </a>
       <ul>
         <li>
-          <button class="btn-floating waves-effect blue-grey lighten-2" @click="deleteDraft" title="Delete draft">
+          <button class="btn-floating waves-effect brown lighten-3" @click="deleteDraft" title="Delete draft">
             <i class="material-icons">delete</i>
           </button>
         </li>
         <li>
-          <button class="btn-floating waves-effect blue-grey lighten-2" :title="`Last published: ${publishDate}`"
+          <button class="btn-floating waves-effect brown lighten-3" :title="`Last published: ${publishDate}`"
             @click="publish" :disabled="published">
             <i class="material-icons">publish</i>
           </button>

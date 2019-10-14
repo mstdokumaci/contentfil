@@ -1,7 +1,7 @@
 <template>
   <div class="row section">
     <div class="col s6" v-for="item in list" :key="item.key">
-      <router-link :to="`/story/${item.key}`" tag="div" class="card grey lighten-5">
+      <router-link :to="`/story/${item.key}`" tag="div" class="card brown lighten-5">
         <div class="card-content">
           <span class="card-title truncate">
             {{item.title}}
@@ -76,14 +76,19 @@
     cursor: pointer;
   }
 
+  .card-title {
+    color: #012;
+    opacity: 0.9;
+  }
+
   .card-content {
     font-family: medium-content-serif-font, Georgia, Cambria, "Times New Roman", Times, serif;
+    opacity: 0.8;
   }
 
   .card-content p {
     font-size: 1.1rem;
     margin: 1rem 0;
-    opacity: 0.8;
     height: 5.1rem;
   }
 
