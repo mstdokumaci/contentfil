@@ -23,10 +23,15 @@
       <div v-html="content" class="editor__content" />
     </div>
     <div class="row">
-      by
-      <router-link :to="`/author/${authorId}`">
-        {{authorName}}
-      </router-link>
+      <div class="col s6">
+        by <router-link :to="`/author/${authorId}`">{{authorName}}</router-link>
+      </div>
+      <div class="col s6">
+        <span class="date right">
+          <i class="material-icons right">access_time</i>
+          {{date}}
+        </span>
+      </div>
     </div>
   </div>
 </template>
@@ -59,6 +64,7 @@
               loadTimeout = null
             }
             this.content = story.get('content').compute()
+            this.date = (new Date(story.get('date').compute())).toISOString()
             this.authorId = story.get('author').serialize().pop()
             this.authorName = story.get(['author', 'name']).compute()
           }
@@ -93,3 +99,9 @@
     }
   }
 </script>
+
+<style scoped>
+  .date {
+    line-height: 24px;
+  }
+</style>

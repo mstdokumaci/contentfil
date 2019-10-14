@@ -33,7 +33,7 @@
             </router-link>
           </li>
           <li class="tab">
-            <router-link to="/me/draft" :class="{active: $route.path === '/me/draft'}">Drafts</router-link>
+            <router-link to="/me/draft" :class="{active: $route.path.startsWith('/me/draft')}">Drafts</router-link>
           </li>
           <li class="tab">
             <router-link to="/me/published" :class="{active: $route.path === '/me/published'}">Published</router-link>
@@ -62,6 +62,8 @@
 </template>
 
 <script>
+  let tabInstance
+
   export default {
     data() {
       return {
@@ -69,6 +71,17 @@
       }
     },
     props: ['user', 'anonymousId'],
+    updated() {
+      const el = document.getElementsByClassName('tabs')[0]
+      if (el) {
+        if (!tabInstance) {
+          tabInstance = M.Tabs.init(el)
+        } else if (tabInstance.el !== el) {
+          tabInstance.destroy()
+          tabInstance = M.Tabs.init(el)
+        }
+      }
+    },
     computed: {
       authenticated() {
         return this.user.type === 'real'
@@ -103,14 +116,6 @@
     line-height: 0;
   }
 
-  .tabs .tab a {
-    color: #789;
-  }
-
-  .tabs .tab a:hover,
-  .tabs .tab a.active {
-    color: #456;
-  }
 
   .fixed-action-btn {
     top: 45px;

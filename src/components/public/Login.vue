@@ -19,7 +19,7 @@
     </div>
     <div class="row">
       <div class="input-field col s6 offset-s3">
-        <button class="btn right waves-effect" @click="login">Login</button>
+        <button class="btn right waves-effect blue-grey lighten-2" @click="login">Login</button>
       </div>
     </div>
   </div>

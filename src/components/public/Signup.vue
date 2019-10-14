@@ -33,7 +33,7 @@
     </div>
     <div class="row">
       <div class="input-field col s6 offset-s3">
-        <button class="btn right waves-effect" @click="signup">Sign up</button>
+        <button class="btn right waves-effect blue-grey lighten-2" @click="signup">Sign up</button>
       </div>
     </div>
   </div>

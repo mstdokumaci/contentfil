@@ -91,4 +91,8 @@
     display: inline-block;
     max-width: 60%;
   }
+
+  .date {
+    line-height: 24px;
+  }
 </style>
