@@ -1,6 +1,11 @@
 const { generateId } = require('./utils')
 
 const createDraft = (_, __, branchDraft) => {
+  const userType = branchDraft.root().get(['user', 'type'])
+  if (!userType || userType.compute !== 'real') {
+    return
+  }
+
   const id = generateId()
 
   branchDraft.set({

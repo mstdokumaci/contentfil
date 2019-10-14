@@ -1,34 +1,37 @@
 <template>
-  <div>
-    <div class="row">
-      <span class="col s6 offset-s3" style="color:red">{{error}}</span>
-    </div>
+  <form id="signupForm" @submit.prevent>
     <div class="row">
       <div class="input-field col s6 offset-s3">
         <i class="material-icons prefix">person</i>
-        <input type="text" id="name" v-model="name" class="validate">
-        <label for="name">Name (public)</label>
+        <input type="text" id="name" v-model="name" required pattern=".{2,}" class="validate">
+        <label for="name">Full name</label>
+        <span class="helper-text" data-error="At least 2 characters">
+          This will be your public author name
+        </span>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s6 offset-s3">
         <i class="material-icons prefix">email</i>
-        <input type="text" id="email" v-model="email" class="validate">
+        <input type="email" id="email" v-model="email" required class="validate" @change="clearEmailError">
         <label for="email">E-mail</label>
+        <span class="helper-text" :data-error="emailError">
+          This will be your login identifier
+        </span>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s6 offset-s3">
         <i class="material-icons prefix">lock_open</i>
-        <input type="password" id="password" v-model="password" class="validate">
+        <input :type="showPassword ? 'text': 'password'" id="password" v-model="password" required pattern=".{6,}"
+          class="validate">
         <label for="password">Password</label>
-      </div>
-    </div>
-    <div class="row">
-      <div class="input-field col s6 offset-s3">
-        <i class="material-icons prefix">lock_open</i>
-        <input type="password" id="password2" v-model="password2" class="validate">
-        <label for="password2">Repeat Password</label>
+        <span class="helper-text" data-error="At least 6 characters">
+          A strong password is adviced
+        </span>
+        <button type="button" @click.prevent="toogleShowPassword" class="right">
+          <i class="material-icons">{{showPassword ? 'visibility_off': 'visibility'}}</i>
+        </button>
       </div>
     </div>
     <div class="row">
@@ -36,7 +39,7 @@
         <button class="btn right waves-effect blue-grey lighten-2" @click="signup">Sign up</button>
       </div>
     </div>
-  </div>
+  </form>
 </template>
 
 <script>
@@ -45,27 +48,16 @@
       return {
         name: '',
         email: '',
+        emailError: 'Invalid e-mail',
         password: '',
-        password2: '',
-        error: ''
+        passType: 'password',
+        showPassword: false
       }
     },
     props: ['user'],
     methods: {
       signup() {
-        if (this.name.length < 3) {
-          this.error = 'Minimum email length is 3'
-        } else if (this.email.length < 5) {
-          this.error = 'Minimum email length is 5'
-        } else if (!~this.email.indexOf('@')) {
-          this.error = 'Invalid email'
-        } else if (this.password.length < 5) {
-          this.error = 'Minimum password length is 5'
-        } else if (this.password !== this.password2) {
-          this.error = 'Passwords should be same'
-        } else {
-          this.error = ''
-
+        if (document.getElementById('signupForm').checkValidity()) {
           const user = this.$client.get('user')
           const listener = user.get('status', {}).on((_, stamp, status) => {
             status = status.compute()
@@ -77,7 +69,13 @@
               }))
               listener.off()
             } else if (status === 'error') {
-              this.error = user.get('error').compute()
+              const error = user.get('error').compute()
+              if (error === 'User exists') {
+                const element = document.getElementById('email')
+                this.emailError = error
+                element.setCustomValidity(error)
+                element.classList.add('invalid')
+              }
               listener.off()
             }
           })
@@ -88,6 +86,13 @@
             password: this.password
           }))
         }
+      },
+      toogleShowPassword() {
+        this.showPassword = !this.showPassword
+      },
+      clearEmailError() {
+        this.emailError = 'Invalid e-mail'
+        document.getElementById('email').setCustomValidity('')
       }
     }
   }

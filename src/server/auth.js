@@ -11,18 +11,26 @@ createPersist({}, new PersistRocksDB('db/auth'))
   })
 
 const setErrorStatus = (user, error) => {
-  if (user.get('type') !== void 0) {
+  if (user.get('type') !== undefined) {
     user.set({ status: 'error', error })
   }
 }
 
 const createUser = (master, user, _, branchUser) => {
+  branchUser.set({ status: 'createStarted', error: null })
+
   try {
     user = JSON.parse(user)
   } catch (e) {
-    return setErrorStatus(branchUser, 'Malformed user data')
+    return setErrorStatus(branchUser, 'Malformed user JSON')
   }
+
   const { name, email, password } = user
+
+  if (!new RegExp('^[^@]+@[^@.]+(\\.[^@.]+)*$').test(email)) {
+    return setErrorStatus(branchUser, 'Invalid e-mail')
+  }
+
   if (auth.get(email) !== undefined) {
     return setErrorStatus(branchUser, 'User exists')
   }
