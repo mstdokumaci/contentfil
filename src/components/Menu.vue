@@ -2,7 +2,9 @@
   <div>
     <nav class="nav-extended" v-if="navigationVisible">
       <div class="nav-wrapper blue-grey lighten-2">
-        <router-link to="/" class="brand-logo">Foraa</router-link>
+        <router-link to="/" class="brand-logo">
+          <img src="/assets/media/logo.png">
+        </router-link>
         <ul class="right">
           <template v-if="authenticated">
             <li :class="{active: $route.path.startsWith('/me')}">
@@ -105,6 +107,11 @@
 <style lang="scss" scoped>
   .brand-logo {
     margin-left: 1rem;
+  }
+
+  .brand-logo>img {
+    height: 38px;
+    margin: 13px 0;
   }
 
   .tabs .btn {
