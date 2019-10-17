@@ -12,6 +12,7 @@
   import Home from './components/Home'
   import Login from './components/public/Login'
   import Signup from './components/public/Signup'
+  import Confirm from './components/public/Confirm'
   import Story from './components/public/Story'
   import Author from './components/public/Author'
   import Profile from './components/Profile'
@@ -26,6 +27,7 @@
       { path: '/', component: Home },
       { path: '/login', component: Login },
       { path: '/signup', component: Signup },
+      { path: '/confirm/:token?', component: Confirm, props: true },
       {
         path: '/story/:id',
         component: Story,
@@ -82,9 +84,11 @@
 
     type = type.compute()
 
-    if (type === 'real' && ['/login', '/signup'].includes(to.path)) {
+    if (type === 'unconfirmed' && !to.path.startsWith('/confirm')) {
+      return next('/confirm')
+    } else if (type === 'real' && ['/login', '/signup'].includes(to.path)) {
       return next('/me')
-    } else if (type !== 'real' && ['/me'].includes(to.path)) {
+    } else if (type !== 'real' && to.path.startsWith('/me')) {
       return next('/login')
     }
 
@@ -130,7 +134,7 @@
               email: this.user.email,
               token: this.user.token
             }))
-            if (this.$client.get(['user', 'type']).compute() !== 'real') {
+            if (!['real', 'unconfirmed'].includes(this.$client.get(['user', 'type']).compute())) {
               this.timeout = setTimeout(() => {
                 this.$client.switchBranch(JSON.stringify({
                   type: 'anonymous',

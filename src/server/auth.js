@@ -1,7 +1,13 @@
+const crypto = require('crypto')
+
 const { createPersist } = require('stx')
 const { PersistRocksDB } = require('stx-persist-rocksdb')
-const { generateId } = require('./utils')
-const crypto = require('crypto')
+const {
+  generateId,
+  createSignedToken,
+  verifySignedToken,
+  sendMail
+} = require('./utils')
 
 let auth
 
@@ -14,6 +20,16 @@ const setErrorStatus = (user, error) => {
   if (user.get('type') !== undefined) {
     user.set({ status: 'error', error })
   }
+}
+
+const sendConfirmationEmail = (name, email) => {
+  const token = createSignedToken(email, Date.now() + 86400 * 1000)
+  sendMail(
+    email,
+    name,
+    'Confirm your e-mail',
+    `Hi ${name}, if you want to confirm ownership of your e-mail address (${email}) with us, please click <a href="http://localhost:8080/confirm/${token}">this confirmation link</a>. If you think it was someone else using your address, please report us by sending an e-mail back. Thank you.`
+  )
 }
 
 const createUser = (master, user, _, branchUser) => {
@@ -40,6 +56,8 @@ const createUser = (master, user, _, branchUser) => {
   const salt = crypto.randomBytes(64)
   const hash = crypto.scryptSync(password, salt, 64).toString('base64')
 
+  sendConfirmationEmail(name, email)
+
   auth.set({
     [email]: {
       salt: salt.toString('base64'),
@@ -60,13 +78,13 @@ const loadUser = async (switcher, email, token, user) => {
 
   if (userBranch.get(['user', 'type']) === undefined) {
     userBranch.get('user').set({
-      type: 'real',
+      type: 'unconfirmed',
       author: ['@', 'author', user.get('id').compute()],
       email,
       token,
       tokenExpiresAt: user.get('tokenExpiresAt').compute()
     })
-    userBranch.set({ route: '/me' })
+    userBranch.set({ route: '/confirm' })
   } else {
     userBranch.get('user').set({
       token,
@@ -74,31 +92,52 @@ const loadUser = async (switcher, email, token, user) => {
     })
   }
 
-  return true
+  return userBranch
+}
+
+const refreshTokenAndLoadUser = async (switcher, email, user) => {
+  const tokenExpiresAt = user.get('tokenExpiresAt')
+  let token
+  if (
+    tokenExpiresAt !== void 0 &&
+    tokenExpiresAt.compute() > Date.now()
+  ) {
+    token = user.get('token').compute()
+  } else {
+    token = crypto.randomBytes(64).toString('base64')
+    user.set({
+      token,
+      tokenExpiresAt: Date.now() + 86400 * 1000 * 10
+    })
+  }
+  return loadUser(switcher, email, token, user)
 }
 
 const authByPassword = async (email, password, switcher) => {
   const user = auth.get(email)
-  if (user !== void 0) {
+  if (user !== undefined) {
     const salt = Buffer.from(user.get('salt').compute(), 'base64')
     const hash = crypto.scryptSync(password, salt, 64).toString('base64')
     if (user.get('hash').compute() === hash) {
-      const tokenExpiresAt = user.get('tokenExpiresAt')
-      let token
-      if (
-        tokenExpiresAt !== void 0 &&
-        tokenExpiresAt.compute() > Date.now()
-      ) {
-        token = user.get('token').compute()
-      } else {
-        token = crypto.randomBytes(64).toString('base64')
-        user.set({
-          token,
-          tokenExpiresAt: Date.now() + 86400 * 1000 * 10
-        })
-      }
-      return loadUser(switcher, email, token, user)
+      return refreshTokenAndLoadUser(switcher, email, user)
     }
+  }
+}
+
+const authByLinkToken = async (token, switcher) => {
+  let email
+  try {
+    email = verifySignedToken(token)
+  } catch (e) {
+    return false
+  }
+  const user = auth.get(email)
+  if (user !== undefined) {
+    const userBranch = await refreshTokenAndLoadUser(switcher, email, user)
+    userBranch.get('user').set({
+      type: 'real'
+    })
+    userBranch.set({ route: '/me' })
   }
 }
 
@@ -149,6 +188,12 @@ const switchBranch = async (fromBranch, branchKey, switcher) => {
     authRequest.password
   ) {
     const success = await authByPassword(authRequest.email, authRequest.password, switcher)
+    return success || setErrorStatus(branchUser, 'Authentication failed')
+  } else if (
+    authRequest.type === 'confirm' &&
+    authRequest.token
+  ) {
+    const success = await authByLinkToken(authRequest.token, switcher)
     return success || setErrorStatus(branchUser, 'Authentication failed')
   } else {
     setErrorStatus(branchUser, 'Unknown authentication type')

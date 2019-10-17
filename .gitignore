@@ -7,5 +7,7 @@ node_modules
 .npm
 .idea
 .vscode
-.key
 db/
+*.key
+
+env.sh

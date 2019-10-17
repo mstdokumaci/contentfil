@@ -85,7 +85,7 @@
     },
     computed: {
       authenticated() {
-        return this.user.type === 'real'
+        return ['real', 'unconfirmed'].includes(this.user.type)
       }
     },
     methods: {
