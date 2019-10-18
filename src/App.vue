@@ -86,7 +86,7 @@
 
     if (type === 'unconfirmed' && !to.path.startsWith('/confirm')) {
       return next('/confirm')
-    } else if (type === 'real' && ['/login', '/signup'].includes(to.path)) {
+    } else if (type === 'real' && ['/login', '/signup', '/confirm'].includes(to.path)) {
       return next('/me')
     } else if (type !== 'real' && to.path.startsWith('/me')) {
       return next('/login')

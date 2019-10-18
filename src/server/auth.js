@@ -28,7 +28,7 @@ const sendConfirmationEmail = (name, email) => {
     email,
     name,
     'Confirm your e-mail',
-    `Hi ${name}, if you want to confirm ownership of your e-mail address (${email}) with us, please click <a href="http://localhost:8080/confirm/${token}">this confirmation link</a>. If you think it was someone else using your address, please report us by sending an e-mail back. Thank you.`
+    `Hi ${name}, if you want to confirm ownership of your e-mail address (${email}) with us, please click <a href="http://localhost:8080/confirm/${token}">this confirmation link</a>. Link will be valid for 24 hours. If you think it was someone else using your address, please report us by sending an e-mail back. Thank you.`
   )
 }
 
@@ -62,13 +62,32 @@ const createUser = (master, user, _, branchUser) => {
     [email]: {
       salt: salt.toString('base64'),
       hash,
-      id
+      id,
+      emailCooldownTtl: Date.now() + 30 * 1000
     }
   })
   master.get('author').set({
     [id]: { name, published: {} }
   })
   branchUser.set({ status: 'created' })
+}
+
+const resendConfirmation = (master, _, __, branchUser) => {
+  const userType = branchUser.get('type')
+  if (!userType || userType.compute() !== 'unconfirmed') {
+    return
+  }
+
+  const email = branchUser.get('email').compute()
+  const user = auth.get(email)
+  const id = user.get('id').compute()
+  const emailCooldownTtl = user.get('emailCooldownTtl')
+  const name = master.get(['author', id, 'name']).compute()
+
+  if (emailCooldownTtl.compute() < Date.now()) {
+    emailCooldownTtl.set(Date.now() + 30 * 1000)
+    sendConfirmationEmail(name, email)
+  }
 }
 
 const loadUser = async (switcher, email, token, user) => {
@@ -138,6 +157,9 @@ const authByLinkToken = async (token, switcher) => {
       type: 'real'
     })
     userBranch.set({ route: '/me' })
+    auth.get(email).set({
+      emailCooldownTtl: null
+    })
   }
 }
 
@@ -202,5 +224,6 @@ const switchBranch = async (fromBranch, branchKey, switcher) => {
 
 module.exports = master => ({
   createUser: createUser.bind(null, master),
+  resendConfirmation: resendConfirmation.bind(null, master),
   switchBranch
 })

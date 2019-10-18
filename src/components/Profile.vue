@@ -41,9 +41,8 @@
               name: author.get('name').compute(),
             }
 
-            const published = author.get('published')
-            if (!publishedSubscription && published) {
-              publishedSubscription = published
+            if (!publishedSubscription) {
+              publishedSubscription = author.get('published', {})
                 .subscribe({ depth: 2 }, list => {
                   const publishedList = list.map((item, key) => {
                     const el = document.createElement('div')

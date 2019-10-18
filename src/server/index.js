@@ -14,6 +14,7 @@ createPersist(
   .then(master => {
     const {
       createUser,
+      resendConfirmation,
       switchBranch
     } = require('./auth')(master)
 
@@ -26,6 +27,7 @@ createPersist(
 
     master.branch.newBranchMiddleware = newBranch => {
       newBranch.get('user').on('create', createUser)
+      newBranch.get('user').on('resend', resendConfirmation)
       newBranch.get('draft').on('create', createDraft)
       newBranch.get('draft').on('delete', deleteDraft)
       newBranch.get('draft').on('publish', publishDraft)
