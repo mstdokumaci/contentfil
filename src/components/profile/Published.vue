@@ -11,7 +11,7 @@
       </router-link>
       </ul>
     </div>
-    <empty v-else>
+    <empty v-if="!publishedList.length && author">
       <p>Seems like you have notthing published yet.</p>
     </empty>
   </div>
@@ -21,7 +21,7 @@
   import Empty from './Empty'
 
   export default {
-    props: ['publishedList'],
+    props: ['author', 'publishedList'],
     components: {
       empty: Empty
     }
