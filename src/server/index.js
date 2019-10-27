@@ -1,6 +1,26 @@
 const { createPersist } = require('stx')
 const { PersistRocksDB } = require('stx-persist-rocksdb')
 
+const {
+  countView,
+  countRead
+} = require('./stats')
+
+const isRealUser = item => {
+  const userType = item.root().get(['user', 'type'])
+  return userType && userType.compute() === 'real'
+}
+
+const getUserId = item => item.root().get(['user', 'author']).serialize().pop()
+
+const afterViewed = viewed => {
+  countView(getUserId(viewed), viewed.parent().path().pop())
+}
+
+const afterRead = read => {
+  countRead(getUserId(read), read.parent().path().pop())
+}
+
 createPersist(
   {
     user: {},
@@ -38,6 +58,16 @@ createPersist(
         },
         {
           path: ['draft', '*', 'content']
+        },
+        {
+          path: ['published', '*', 'viewed'],
+          authorize: isRealUser,
+          after: afterViewed
+        },
+        {
+          path: ['published', '*', 'read'],
+          authorize: isRealUser,
+          after: afterRead
         }
       ]
     }

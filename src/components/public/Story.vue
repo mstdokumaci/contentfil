@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-scroll="scroll">
     <div class="row">
       <div class="fixed-action-btn" v-if="hasDraft">
         <a class="btn-floating btn-large waves-effect brown lighten-3">
@@ -21,7 +21,7 @@
       </div>
       <div v-html="content" class="editor__content" />
     </div>
-    <div class="row">
+    <div id="author-date" class="row">
       <div class="col s6">
         by <router-link :to="`/author/${authorId}`">{{authorName}}</router-link>
       </div>
@@ -44,10 +44,12 @@
         content: '',
         authorId: '',
         authorName: '',
-        hasDraft: false
+        date: '',
+        hasDraft: false,
+        read: true
       }
     },
-    props: ['id'],
+    props: ['user', 'id'],
     created() {
       let loadTimeout = setTimeout(() => {
         this.$router.push('/')
@@ -66,6 +68,15 @@
             this.date = (new Date(story.get('date').compute())).toISOString()
             this.authorId = story.get('author').serialize().pop()
             this.authorName = story.get(['author', 'name']).compute()
+            const viewed = story.get('viewed')
+            if (this.user.type === 'real' && !viewed.compute()) {
+              viewed.set(Date.now())
+              const read = story.get('read').compute()
+              if (!read) {
+                this.read = false
+                setTimeout(() => this.scroll(), 2000)
+              }
+            }
           }
         })
 
@@ -88,6 +99,17 @@
     methods: {
       unpublish() {
         this.$client.get('draft').emit('unpublish', this.id)
+      },
+      scroll() {
+        console.log(this.read)
+        if (
+          !this.read
+          && window.innerHeight - document.getElementById('author-date').getBoundingClientRect().top > -50
+        ) {
+          console.log('marked read')
+          this.$client.get(['published', this.id, 'read']).set(true)
+          this.read = true
+        }
       }
     },
     beforeDestroy: () => {

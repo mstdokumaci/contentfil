@@ -88,3 +88,8 @@ const countRead = (userId, storyId) => {
     }
   })
 }
+
+module.exports = {
+  countView,
+  countRead
+}

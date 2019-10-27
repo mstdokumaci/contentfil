@@ -44,7 +44,9 @@ const publishDraft = (master, id, __, branchDraft) => {
     [id]: {
       content: draft.get('content').compute(),
       date: Date.now(),
-      author: ['@', 'author', authorId]
+      author: ['@', 'author', authorId],
+      viewed: false,
+      read: false
     }
   })
   master.get(['author', authorId]).set({
