@@ -147,7 +147,7 @@
           const published = draft.get([this.id, 'published'])
           this.published = published && content
             && content.compute() === published.get('content').compute()
-          this.publishDate = published ? (new Date(published.get('date').compute())).toISOString() : 'Never'
+          this.publishDate = published ? this.$formatDate(published.get('date').compute()) : 'Never'
         });
     },
     mounted() {

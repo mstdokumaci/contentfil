@@ -3,12 +3,23 @@ const { PersistRocksDB } = require('stx-persist-rocksdb')
 
 const {
   countView,
-  countRead
+  countRead,
+  countVote
 } = require('./stats')
 
 const isRealUser = item => {
   const userType = item.root().get(['user', 'type'])
   return userType && userType.compute() === 'real'
+}
+
+const isRealUserAndTrue = (item, value) => {
+  return isRealUser(item) && value === true
+}
+
+const isRealUserAndReadAndValidVote = (vote, value) => {
+  return isRealUser(vote)
+    && vote.parent().get('read').compute()
+    && [0, 1, 3, 5].includes(value)
 }
 
 const getUserId = item => item.root().get(['user', 'author']).serialize().pop()
@@ -21,13 +32,25 @@ const afterRead = read => {
   countRead(getUserId(read), read.parent().path().pop())
 }
 
+const afterVote = vote => {
+  vote.parent().set({ voted: Date.now() })
+  countVote(getUserId(vote), vote.parent().path().pop(), vote.compute())
+}
+
+const refreshHome = homeList => {
+  homeList()
+  setTimeout(refreshHome, 30 * 1000, homeList)
+}
+
 createPersist(
   {
     user: {},
     route: '',
     author: {},
     draft: {},
-    published: {}
+    published: {},
+    fresh: {},
+    home: {}
   },
   new PersistRocksDB('db/master')
 )
@@ -42,8 +65,11 @@ createPersist(
       createDraft,
       deleteDraft,
       publishDraft,
-      unPublishStory
+      unPublishStory,
+      homeList
     } = require('./story')(master)
+
+    refreshHome(homeList)
 
     master.branch.newBranchMiddleware = newBranch => {
       newBranch.get('user').on('create', createUser)
@@ -61,13 +87,18 @@ createPersist(
         },
         {
           path: ['published', '*', 'viewed'],
-          authorize: isRealUser,
+          authorize: isRealUserAndTrue,
           after: afterViewed
         },
         {
           path: ['published', '*', 'read'],
-          authorize: isRealUser,
+          authorize: isRealUserAndTrue,
           after: afterRead
+        },
+        {
+          path: ['published', '*', 'vote'],
+          authorize: isRealUserAndReadAndValidVote,
+          after: afterVote
         }
       ]
     }

@@ -27,6 +27,15 @@ Object.defineProperty(
   }
 )
 
+Object.defineProperty(
+  Vue.prototype,
+  '$formatDate',
+  {
+    value: timestamp => (new Date(timestamp)).toISOString().slice(0, 16).replace(/T/, ' '),
+    configurable: true
+  }
+)
+
 const app = new Vue({
   render: h => h(App)
 })

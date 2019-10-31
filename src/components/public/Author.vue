@@ -56,7 +56,7 @@
                       title: el.firstChild && el.firstChild.textContent.length
                         ? el.firstChild.textContent.trim() : `Untitled ${key.slice(0, 3)}`,
                       timestamp,
-                      date: (new Date(timestamp)).toISOString()
+                      date: this.$formatDate(timestamp)
                     }
                   })
                   publishedList.sort((a, b) => b.timestamp - a.timestamp)

@@ -12,7 +12,7 @@
       </ul>
     </div>
     <empty v-if="!publishedList.length && author">
-      <p>Seems like you have notthing published yet.</p>
+      <p>Seems like you have nothing published yet.</p>
     </empty>
   </div>
 </template>

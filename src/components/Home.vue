@@ -42,25 +42,21 @@
       }
     },
     created() {
-      subscription = this.$client.get('published', {}).subscribe({
-        sort: { path: ['date'], type: Number, desc: true },
-        limit: 6
-      }, list => {
+      subscription = this.$client.get('home', {}).subscribe(list => {
         list = list.map((item, key) => {
           const el = document.createElement('div')
           el.innerHTML = item.get('content').compute()
-          const timestamp = item.get('date').compute()
           return {
             key: key,
             title: el.firstChild && el.firstChild.textContent.length
               ? el.firstChild.textContent : `Untitled ${key.slice(0, 3)}`,
             firstParagraph: el.childNodes && el.childNodes[1] && truncate(el.childNodes[1].textContent),
-            timestamp,
-            date: (new Date(timestamp)).toISOString(),
+            rank: item.get('rank').compute(),
+            date: this.$formatDate(item.get('date').compute()),
             author: item.get(['author', 'name']).compute()
           }
         })
-        list.sort((a, b) => b.timestamp - a.timestamp)
+        list.sort((a, b) => b.rank - a.rank)
         this.list = list
       })
     },

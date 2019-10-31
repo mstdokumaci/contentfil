@@ -32,6 +32,11 @@
         </span>
       </div>
     </div>
+    <div class="row vote">
+      <span :class="{voted: vote === 1}" @click="castVote(1)">⇑</span>
+      <span :class="{voted: vote === 3}" @click="castVote(3)">⤊</span>
+      <span :class=" {voted: vote===5}" @click="castVote(5)">⟰</span>
+    </div>
   </div>
 </template>
 
@@ -46,7 +51,8 @@
         authorName: '',
         date: '',
         hasDraft: false,
-        read: true
+        read: true,
+        vote: 0
       }
     },
     props: ['user', 'id'],
@@ -65,12 +71,13 @@
               loadTimeout = null
             }
             this.content = story.get('content').compute()
-            this.date = (new Date(story.get('date').compute())).toISOString()
+            this.date = this.$formatDate(story.get('date').compute())
             this.authorId = story.get('author').serialize().pop()
             this.authorName = story.get(['author', 'name']).compute()
+            this.vote = story.get('vote').compute()
             const viewed = story.get('viewed')
             if (this.user.type === 'real' && !viewed.compute()) {
-              viewed.set(Date.now())
+              viewed.set(true)
               const read = story.get('read').compute()
               if (!read) {
                 this.read = false
@@ -97,16 +104,20 @@
         })
     },
     methods: {
+      castVote(vote) {
+        if (this.vote === vote) {
+          vote = 0
+        }
+        this.$client.get(['published', this.id, 'vote']).set(vote)
+      },
       unpublish() {
         this.$client.get('draft').emit('unpublish', this.id)
       },
       scroll() {
-        console.log(this.read)
         if (
           !this.read
           && window.innerHeight - document.getElementById('author-date').getBoundingClientRect().top > -50
         ) {
-          console.log('marked read')
           this.$client.get(['published', this.id, 'read']).set(true)
           this.read = true
         }
@@ -124,5 +135,16 @@
 <style scoped>
   .date {
     line-height: 24px;
+  }
+
+  .vote span {
+    font-size: 2.5rem;
+    line-height: 2.5rem;
+    padding: 0.5rem;
+    cursor: pointer;
+  }
+
+  .vote .voted {
+    color: red;
   }
 </style>
