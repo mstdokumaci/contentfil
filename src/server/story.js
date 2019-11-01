@@ -93,7 +93,7 @@ const homeList = master => {
     }
 
     const stats = getStoryStats(id)
-    const rank = (timestamp - threshold) / 3600 / 1000 + stats.totalVote * 2 + stats.readerCount / 10
+    const rank = (timestamp - threshold) / 3600 / 1000 + stats.totalVote / 3 + stats.readerCount / 10
     newList.push([id, rank])
   })
   newList.sort((a, b) => b[1] - a[1])

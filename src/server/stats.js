@@ -116,8 +116,8 @@ const countVote = (userId, storyId, newVote) => {
     ? (averageVote * votedCount - vote + newVote) / newVotedCount
     : 0
 
-  const voteImpact = averageVote ? vote / averageVote : 0
-  const newVoteImpact = newAverageVote ? newVote / newAverageVote : 0
+  const voteImpact = averageVote ? Math.round(vote / averageVote * 10) : 0
+  const newVoteImpact = newAverageVote ? Math.round(newVote / newAverageVote * 10) : 0
   const newTotalVote = totalVote - voteImpact + newVoteImpact
 
   stats.set({
@@ -151,7 +151,7 @@ const countVote = (userId, storyId, newVote) => {
     }
 
     const totalVote = stats.get(['stories', id, 'totalVote'])
-    totalVote.set(totalVote.compute() - vote / averageVote + vote / newAverageVote)
+    totalVote.set(totalVote.compute() - Math.round(vote / averageVote * 10) + Math.round(vote / newAverageVote * 10))
   })
 }
 

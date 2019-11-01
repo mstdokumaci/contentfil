@@ -32,10 +32,19 @@
         </span>
       </div>
     </div>
-    <div class="row vote">
-      <span :class="{voted: vote === 1}" @click="castVote(1)">⇑</span>
-      <span :class="{voted: vote === 3}" @click="castVote(3)">⤊</span>
-      <span :class=" {voted: vote===5}" @click="castVote(5)">⟰</span>
+    <div class="row">
+      <button :class="{'deep-orange': vote === 1, brown: vote !== 1}"
+        class="btn-floating btn-large waves-effect lighten-3" title="Go fly high" @click="castVote(1)">
+        <i class="material-icons right vote-1">flight_takeoff</i>
+      </button>
+      <button :class="{'deep-orange': vote === 3, brown: vote !== 3}"
+        class="btn-floating btn-large waves-effect lighten-3" title="Go fly higher" @click="castVote(3)">
+        <i class="material-icons right vote-3">flight_takeoff</i>
+      </button>
+      <button :class="{'deep-orange': vote === 5, brown: vote !== 5}"
+        class="btn-floating btn-large waves-effect lighten-3" title="Go fly the highest" @click="castVote(5)">
+        <i class="material-icons right vote-5">flight_takeoff</i>
+      </button>
     </div>
   </div>
 </template>
@@ -137,14 +146,19 @@
     line-height: 24px;
   }
 
-  .vote span {
-    font-size: 2.5rem;
-    line-height: 2.5rem;
-    padding: 0.5rem;
-    cursor: pointer;
-  }
-
   .vote .voted {
     color: red;
+  }
+
+  .btn-large .vote-1 {
+    font-size: 1.4rem;
+  }
+
+  .btn-large .vote-3 {
+    font-size: 1.8rem;
+  }
+
+  .btn-large .vote-5 {
+    font-size: 2.1rem;
   }
 </style>
