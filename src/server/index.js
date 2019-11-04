@@ -65,19 +65,25 @@ createPersist(
       createDraft,
       deleteDraft,
       publishDraft,
-      unPublishStory,
       homeList
     } = require('./story')(master)
+
+    const {
+      getStories
+    } = require('./stats')
 
     refreshHome(homeList)
 
     master.branch.newBranchMiddleware = newBranch => {
-      newBranch.get('user').on('create', createUser)
-      newBranch.get('user').on('resend', resendConfirmation)
-      newBranch.get('draft').on('create', createDraft)
-      newBranch.get('draft').on('delete', deleteDraft)
-      newBranch.get('draft').on('publish', publishDraft)
-      newBranch.get('draft').on('unpublish', unPublishStory)
+      const user = newBranch.get('user')
+      user.on('create', createUser)
+      user.on('resend', resendConfirmation)
+
+      const draft = newBranch.get('draft')
+      draft.on('create', createDraft)
+      draft.on('delete', deleteDraft)
+      draft.on('publish', publishDraft)
+
       newBranch.branch.clientCanUpdate = [
         {
           path: ['route']
@@ -101,6 +107,38 @@ createPersist(
           after: afterVote
         }
       ]
+
+      let authorSubscription, storiesSubscription
+      user.on('login', () => {
+        if (authorSubscription) {
+          return
+        }
+
+        const email = user.get('email').compute()
+
+        authorSubscription = user.get('author').origin().subscribe({ keys: ['published'], depth: 2 }, author => {
+          const published = author.get('published')
+          if (!published) {
+            return
+          }
+
+          const ids = published.map((_, id) => id)
+          if (storiesSubscription) {
+            storiesSubscription.unsubscribe()
+          }
+          storiesSubscription = getStories().subscribe({ keys: ids }, stories => {
+            const setJSON = ids.reduce((obj, id) => {
+              const story = stories.get(id)
+              if (story) {
+                const { viewerCount, readerCount, voterCount, totalVote } = story.serialize()
+                obj[id] = { viewerCount, readerCount, voterCount, totalVote }
+              }
+              return obj
+            }, {})
+            published.set(setJSON)
+          })
+        })
+      })
     }
 
     const server = master.listen(7071)

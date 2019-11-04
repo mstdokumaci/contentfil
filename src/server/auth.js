@@ -95,8 +95,10 @@ const loadUser = async (switcher, email, token, user) => {
     email, new PersistRocksDB(`db/user/${email}`)
   )
 
-  if (userBranch.get(['user', 'type']) === undefined) {
-    userBranch.get('user').set({
+  const branchUser = userBranch.get('user')
+
+  if (branchUser.get('type') === undefined) {
+    branchUser.set({
       type: 'unconfirmed',
       author: ['@', 'author', user.get('id').compute()],
       email,
@@ -105,11 +107,12 @@ const loadUser = async (switcher, email, token, user) => {
     })
     userBranch.set({ route: '/confirm' })
   } else {
-    userBranch.get('user').set({
+    branchUser.set({
       token,
       tokenExpiresAt: user.get('tokenExpiresAt').compute()
     })
   }
+  branchUser.emit('login')
 
   return userBranch
 }

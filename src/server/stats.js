@@ -155,6 +155,8 @@ const countVote = (userId, storyId, newVote) => {
   })
 }
 
+const getStories = () => stats.get('stories')
+
 const getStoryStats = id => {
   const story = stats.get(['stories', id])
   return story ? {
@@ -174,5 +176,6 @@ module.exports = {
   countView,
   countRead,
   countVote,
+  getStories,
   getStoryStats
 }

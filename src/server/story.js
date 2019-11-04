@@ -41,7 +41,6 @@ const publishDraft = (master, id, __, branchDraft) => {
     return
   }
   const authorId = branchDraft.root().get(['user', 'author']).serialize().pop()
-  const fresh = master.get(['published', id]) === undefined
   master.get('published').set({
     [id]: {
       content: draft.get('content').compute(),
@@ -60,27 +59,13 @@ const publishDraft = (master, id, __, branchDraft) => {
   draft.set({
     published: ['@', 'published', id]
   })
-  if (fresh) {
+  const threshold = Date.now() - 10 * 86400 * 1000
+  const firstPublish = draft.get('firstPublish', Date.now()).compute()
+  if (firstPublish >= threshold) {
     master.get('fresh').set({
-      [id]: Date.now()
+      [id]: firstPublish
     })
   }
-}
-
-const unPublishStory = (master, id, __, branchDraft) => {
-  const draft = branchDraft.get(id)
-  if (draft === undefined) {
-    return
-  }
-  const authorId = branchDraft.root().get(['user', 'author']).serialize().pop()
-  master.get(['author', authorId, 'published', id]).set(null)
-  draft.get('published').set(null)
-  master.get(['published', id]).set(null)
-  const fresh = master.get(['fresh', id])
-  if (fresh !== undefined) {
-    fresh.set(null)
-  }
-  branchDraft.root().get('route').set(`/me/draft/${id}`)
 }
 
 const homeList = master => {
@@ -119,6 +104,5 @@ module.exports = master => ({
   createDraft,
   deleteDraft,
   publishDraft: publishDraft.bind(null, master),
-  unPublishStory: unPublishStory.bind(null, master),
   homeList: homeList.bind(null, master)
 })

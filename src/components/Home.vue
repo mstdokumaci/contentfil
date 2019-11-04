@@ -1,6 +1,6 @@
 <template>
   <div class="row section">
-    <div class="col s6" v-for="item in list" :key="item.key">
+    <div class="col m12 l6" v-for="item in list" :key="item.key">
       <router-link :to="`/story/${item.key}`" tag="div" class="card brown lighten-5">
         <div class="card-content">
           <span class="card-title truncate">

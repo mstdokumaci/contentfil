@@ -7,11 +7,6 @@
         </a>
         <ul>
           <li>
-            <button class="btn btn-floating waves-effect brown lighten-3" title="Unpublish story" @click="unpublish">
-              <i class="material-icons">delete</i>
-            </button>
-          </li>
-          <li>
             <router-link class="btn btn-floating waves-effect brown lighten-3" title="Edit story"
               :to="`/me/draft/${id}`">
               <i class="material-icons">edit</i>
@@ -87,11 +82,11 @@
             const viewed = story.get('viewed')
             if (this.user.type === 'real' && !viewed.compute()) {
               viewed.set(true)
-              const read = story.get('read').compute()
-              if (!read) {
-                this.read = false
-                setTimeout(() => this.scroll(), 2000)
-              }
+            }
+            const read = story.get('read').compute()
+            if (!read) {
+              this.read = false
+              setTimeout(() => this.scroll(), 2000)
             }
           }
         })
@@ -118,9 +113,6 @@
           vote = 0
         }
         this.$client.get(['published', this.id, 'vote']).set(vote)
-      },
-      unpublish() {
-        this.$client.get('draft').emit('unpublish', this.id)
       },
       scroll() {
         if (

@@ -41,20 +41,29 @@
               name: author.get('name').compute(),
             }
 
-            if (!publishedSubscription) {
-              publishedSubscription = author.get('published', {})
+            const published = author.get('published')
+            if (published && !publishedSubscription) {
+              publishedSubscription = published
                 .subscribe({ depth: 2 }, list => {
                   const publishedList = list.map((item, key) => {
                     const el = document.createElement('div')
                     const content = item.get('content').compute()
                     el.innerHTML = content
                     const timestamp = item.get('date').compute()
+                    const viewed = item.get('viewerCount')
+                    const read = item.get('readerCount')
+                    const voted = item.get('voterCount')
+                    const vote = item.get('totalVote')
                     return {
                       key: key,
                       title: el.firstChild && el.firstChild.textContent.length
                         ? el.firstChild.textContent.trim() : `Untitled ${key.slice(0, 3)}`,
                       timestamp,
-                      date: this.$formatDate(timestamp)
+                      date: this.$formatDate(timestamp),
+                      viewed: viewed ? viewed.compute() : 0,
+                      read: read ? read.compute() : 0,
+                      voted: voted ? voted.compute() : 0,
+                      vote: vote ? vote.compute() : 0
                     }
                   })
                   publishedList.sort((a, b) => b.timestamp - a.timestamp)
