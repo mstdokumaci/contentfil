@@ -28,15 +28,15 @@
       </div>
     </div>
     <div class="row">
-      <button :class="{'deep-orange': vote === 1, brown: vote !== 1}"
+      <button :disabled="authorId === ownAuthorId" :class="{'deep-orange': vote === 1, brown: vote !== 1}"
         class="btn-floating btn-large waves-effect lighten-3" title="Go fly high" @click="castVote(1)">
         <i class="material-icons right vote-1">flight_takeoff</i>
       </button>
-      <button :class="{'deep-orange': vote === 3, brown: vote !== 3}"
+      <button :disabled="authorId === ownAuthorId" :class="{'deep-orange': vote === 3, brown: vote !== 3}"
         class="btn-floating btn-large waves-effect lighten-3" title="Go fly higher" @click="castVote(3)">
         <i class="material-icons right vote-3">flight_takeoff</i>
       </button>
-      <button :class="{'deep-orange': vote === 5, brown: vote !== 5}"
+      <button :disabled="authorId === ownAuthorId" :class="{'deep-orange': vote === 5, brown: vote !== 5}"
         class="btn-floating btn-large waves-effect lighten-3" title="Go fly the highest" @click="castVote(5)">
         <i class="material-icons right vote-5">flight_takeoff</i>
       </button>
@@ -51,6 +51,7 @@
     data() {
       return {
         content: '',
+        ownAuthorId: '',
         authorId: '',
         authorName: '',
         date: '',
@@ -80,8 +81,11 @@
             this.authorName = story.get(['author', 'name']).compute()
             this.vote = story.get('vote').compute()
             const viewed = story.get('viewed')
-            if (this.user.type === 'real' && !viewed.compute()) {
-              viewed.set(true)
+            if (this.user.type === 'real') {
+              this.ownAuthorId = this.$client.get(['user', 'author']).serialize().pop()
+              if (!viewed.compute()) {
+                viewed.set(true)
+              }
             }
             const read = story.get('read').compute()
             if (!read) {

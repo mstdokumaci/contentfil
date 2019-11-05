@@ -40,7 +40,8 @@ const publishDraft = (master, id, __, branchDraft) => {
   if (draft === undefined) {
     return
   }
-  const authorId = branchDraft.root().get(['user', 'author']).serialize().pop()
+  const branchRoot = branchDraft.root()
+  const authorId = branchRoot.get(['user', 'author']).serialize().pop()
   master.get('published').set({
     [id]: {
       content: draft.get('content').compute(),
@@ -50,6 +51,12 @@ const publishDraft = (master, id, __, branchDraft) => {
       read: false,
       vote: 0
     }
+  })
+  branchRoot.get(['published', id]).set({
+    viewed: true,
+    read: true,
+    vote: 0,
+    voted: Date.now()
   })
   master.get(['author', authorId]).set({
     published: {

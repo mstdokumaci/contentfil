@@ -151,7 +151,7 @@
         }
       })
 
-      subscription = this.$client.get('user', { type: 'none' }).subscribe({ excludeKeys: ['author'] }, user => {
+      subscription = this.$client.get('user', { type: 'none' }).subscribe({ depth: 1 }, user => {
         if (user.get('type').compute() !== 'none') {
           user = user.serialize()
           if (offlineRoute) {

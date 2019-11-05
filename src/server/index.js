@@ -16,8 +16,9 @@ const isRealUserAndTrue = (item, value) => {
   return isRealUser(item) && value === true
 }
 
-const isRealUserAndReadAndValidVote = (vote, value) => {
+const isRealUserAndNotOwnStoryAndReadAndValidVote = (vote, value) => {
   return isRealUser(vote)
+    && vote.root().get(['user', 'author']).serialize().pop() !== vote.parent().get('author').serialize().pop()
     && vote.parent().get('read').compute()
     && [0, 1, 3, 5].includes(value)
 }
@@ -103,7 +104,7 @@ createPersist(
         },
         {
           path: ['published', '*', 'vote'],
-          authorize: isRealUserAndReadAndValidVote,
+          authorize: isRealUserAndNotOwnStoryAndReadAndValidVote,
           after: afterVote
         }
       ]
