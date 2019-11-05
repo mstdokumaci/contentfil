@@ -24,7 +24,7 @@
         </span>
       </li>
     </ul>
-    <empty v-if="!publishedList.length && author">
+    <empty v-if="!publishedList.length">
       <p>Seems like you have nothing published yet.</p>
     </empty>
   </div>
@@ -34,7 +34,7 @@
   import Empty from './Empty'
 
   export default {
-    props: ['author', 'publishedList'],
+    props: ['publishedList'],
     components: {
       empty: Empty
     }

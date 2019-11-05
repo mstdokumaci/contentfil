@@ -10,7 +10,7 @@
 </template>
 
 <script>
-  import Published from '../profile/Published'
+  import Published from './Published'
 
   let authorSubscription, publishedSubscription
 
