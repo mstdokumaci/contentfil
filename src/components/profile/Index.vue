@@ -6,7 +6,7 @@
     <div class="row">
       <span>
         <b>Public Author Profile:</b>
-        <router-link :to="`/author/${author.id}`">{{author.name}}</router-link>
+        <router-link :to="`/author/${user.author}`">{{authorName}}</router-link>
       </span>
     </div>
   </div>
@@ -14,6 +14,6 @@
 
 <script>
   export default {
-    props: ['user', 'author']
+    props: ['user', 'authorName']
   }
 </script>

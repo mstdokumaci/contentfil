@@ -28,15 +28,15 @@
       </div>
     </div>
     <div class="row">
-      <button :disabled="authorId === ownAuthorId" :class="{'deep-orange': vote === 1, brown: vote !== 1}"
+      <button :disabled="canNotVote" :class="{'deep-orange': vote === 1, brown: vote !== 1}"
         class="btn-floating btn-large waves-effect lighten-3" title="Go fly high" @click="castVote(1)">
         <i class="material-icons right vote-1">flight_takeoff</i>
       </button>
-      <button :disabled="authorId === ownAuthorId" :class="{'deep-orange': vote === 3, brown: vote !== 3}"
+      <button :disabled="canNotVote" :class="{'deep-orange': vote === 3, brown: vote !== 3}"
         class="btn-floating btn-large waves-effect lighten-3" title="Go fly higher" @click="castVote(3)">
         <i class="material-icons right vote-3">flight_takeoff</i>
       </button>
-      <button :disabled="authorId === ownAuthorId" :class="{'deep-orange': vote === 5, brown: vote !== 5}"
+      <button :disabled="canNotVote" :class="{'deep-orange': vote === 5, brown: vote !== 5}"
         class="btn-floating btn-large waves-effect lighten-3" title="Go fly the highest" @click="castVote(5)">
         <i class="material-icons right vote-5">flight_takeoff</i>
       </button>
@@ -45,18 +45,17 @@
 </template>
 
 <script>
-  let storySubscription, draftSubscription
+  let storySubscription, userTypeListener, draftSubscription
 
   export default {
     data() {
       return {
         content: '',
-        ownAuthorId: '',
         authorId: '',
         authorName: '',
         date: '',
         hasDraft: false,
-        read: true,
+        read: false,
         vote: 0
       }
     },
@@ -65,6 +64,16 @@
       let loadTimeout = setTimeout(() => {
         this.$router.push('/')
       }, 500)
+
+      const isReal = (viewed, read) => {
+        if (!viewed.compute()) {
+          viewed.set(true)
+        }
+        if (!read.compute()) {
+          this.read = false
+          setTimeout(() => this.scroll(), 2000)
+        }
+      }
 
       storySubscription = this.$client
         .get('published', {})
@@ -81,16 +90,17 @@
             this.authorName = story.get(['author', 'name']).compute()
             this.vote = story.get('vote').compute()
             const viewed = story.get('viewed')
+            const read = story.get('read')
             if (this.user.type === 'real') {
-              this.ownAuthorId = this.$client.get(['user', 'author']).serialize().pop()
-              if (!viewed.compute()) {
-                viewed.set(true)
-              }
-            }
-            const read = story.get('read').compute()
-            if (!read) {
-              this.read = false
-              setTimeout(() => this.scroll(), 2000)
+              isReal(viewed, read)
+            } else {
+              userTypeListener = this.$client.get(['user', 'type']).on((_, __, type) => {
+                if (type === 'real') {
+                  isReal(viewed, read)
+                  userTypeListener.off()
+                  userTypeListener = null
+                }
+              })
             }
           }
         })
@@ -110,6 +120,11 @@
             })
           }
         })
+    },
+    computed: {
+      canNotVote() {
+        return this.user.type !== 'real' || this.authorId === this.user.author
+      }
     },
     methods: {
       castVote(vote) {
@@ -131,6 +146,8 @@
     beforeDestroy: () => {
       storySubscription && storySubscription.unsubscribe()
       storySubscription = null
+      userTypeListener && userTypeListener.off()
+      userTypeListener = null
       draftSubscription && draftSubscription.unsubscribe()
       draftSubscription = null
     }

@@ -73,7 +73,7 @@ createPersist(
       getStories
     } = require('./stats')
 
-    refreshHome(homeList)
+    setTimeout(refreshHome, 5 * 1000, homeList)
 
     master.branch.newBranchMiddleware = newBranch => {
       const user = newBranch.get('user')
@@ -114,8 +114,6 @@ createPersist(
         if (authorSubscription) {
           return
         }
-
-        const email = user.get('email').compute()
 
         authorSubscription = user.get('author').origin().subscribe({ keys: ['published'], depth: 2 }, author => {
           const published = author.get('published')

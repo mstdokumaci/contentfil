@@ -154,6 +154,7 @@
       subscription = this.$client.get('user', { type: 'none' }).subscribe({ depth: 1 }, user => {
         if (user.get('type').compute() !== 'none') {
           user = user.serialize()
+          user.author = user.author.pop()
           if (offlineRoute) {
             route.set(offlineRoute)
             offlineRoute = null

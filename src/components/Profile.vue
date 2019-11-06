@@ -1,5 +1,5 @@
 <template>
-  <router-view :user="user" :author="author" :draft-list="draftList" :published-list="publishedList" />
+  <router-view :user="user" :authorName="authorName" :draft-list="draftList" :published-list="publishedList" />
 </template>
 
 <script>
@@ -10,7 +10,7 @@
       return {
         draftList: [],
         publishedList: [],
-        author: {}
+        authorName: ''
       }
     },
     props: ['user'],
@@ -34,14 +34,11 @@
 
       authorSubscription = this.$client.get('user')
         .subscribe({ keys: ['author'], depth: 2 }, user => {
-          const author = user.get('author')
-          if (author) {
-            this.author = {
-              id: author.serialize().pop(),
-              name: author.get('name').compute(),
-            }
+          const authorName = user.get(['author', 'name'])
+          if (authorName) {
+            this.authorName = authorName.compute()
 
-            const published = author.get('published')
+            const published = user.get(['author', 'published'])
             if (published && !publishedSubscription) {
               publishedSubscription = published
                 .subscribe({ depth: 2 }, list => {
@@ -50,20 +47,16 @@
                     const content = item.get('content').compute()
                     el.innerHTML = content
                     const timestamp = item.get('date').compute()
-                    const viewed = item.get('viewerCount')
-                    const read = item.get('readerCount')
-                    const voted = item.get('voterCount')
-                    const vote = item.get('totalVote')
                     return {
                       key: key,
                       title: el.firstChild && el.firstChild.textContent.length
                         ? el.firstChild.textContent.trim() : `Untitled ${key.slice(0, 3)}`,
                       timestamp,
                       date: this.$formatDate(timestamp),
-                      viewed: viewed ? viewed.compute() : 0,
-                      read: read ? read.compute() : 0,
-                      voted: voted ? voted.compute() : 0,
-                      vote: vote ? vote.compute() : 0
+                      viewed: item.get('viewerCount', 0).compute(),
+                      read: item.get('readerCount', 0).compute(),
+                      voted: item.get('voterCount', 0).compute(),
+                      vote: item.get('totalVote', 0).compute()
                     }
                   })
                   publishedList.sort((a, b) => b.timestamp - a.timestamp)
