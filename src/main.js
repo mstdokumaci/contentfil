@@ -7,17 +7,6 @@ import client from './client'
 Vue.config.productionTip = false
 Vue.use(VueRouter)
 
-Vue.directive('scroll', {
-  inserted: function (el, binding) {
-    let f = function (evt) {
-      if (binding.value(evt, el)) {
-        window.removeEventListener('scroll', f)
-      }
-    }
-    window.addEventListener('scroll', f)
-  }
-})
-
 Object.defineProperty(
   Vue.prototype,
   '$client',

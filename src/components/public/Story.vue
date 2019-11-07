@@ -1,5 +1,5 @@
 <template>
-  <div v-scroll="scroll">
+  <div>
     <div class="row">
       <div class="fixed-action-btn" v-if="hasDraft">
         <a class="btn-floating btn-large waves-effect brown lighten-3">
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-  let storySubscription, userTypeListener, draftSubscription
+  let storySubscription, userTypeListener, draftSubscription, scrollListener
 
   export default {
     data() {
@@ -120,6 +120,9 @@
             })
           }
         })
+
+      scrollListener = () => this.scroll()
+      window.addEventListener('scroll', scrollListener)
     },
     computed: {
       canNotVote() {
@@ -144,6 +147,8 @@
       }
     },
     beforeDestroy: () => {
+      window.removeEventListener('scroll', scrollListener)
+      scrollListener = null
       storySubscription && storySubscription.unsubscribe()
       storySubscription = null
       userTypeListener && userTypeListener.off()
