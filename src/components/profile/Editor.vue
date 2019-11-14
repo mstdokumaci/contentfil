@@ -21,22 +21,32 @@
     <editor-menu-bubble :editor="editor" :keep-in-bounds="false" v-slot="{ commands, isActive, getMarkAttrs, menu }">
       <div class="menububble" :class="{ 'is-active': menu.isActive }"
         :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`">
-        <button class="menububble__button" :class="{ 'is-active': isActive.bold() }" @click="commands.bold">B</button>
+        <button class="menububble__button" :class="{ 'is-active': isActive.bold() }" @click="commands.bold">
+          B
+        </button>
 
-        <button class="menububble__button" :class="{ 'is-active': isActive.italic() }"
-          @click="commands.italic">I</button>
+        <button class="menububble__button" :class="{ 'is-active': isActive.italic() }" @click="commands.italic">
+          I
+        </button>
 
-        <button class="menububble__button" :class="{ 'is-active': isActive.code() }"
-          @click="commands.code">&lt;&gt;</button>
+        <button class="menububble__button" :class="{ 'is-active': isActive.code() }" @click="commands.code">
+          &lt;&gt;
+        </button>
 
         <button class="menububble__button" :class="{ 'is-active': isActive.heading({ level: 1 }) }"
-          @click="commands.heading({ level: 1 })">H1</button>
+          @click="commands.heading({ level: 1 })">
+          H1
+        </button>
 
         <button class="menububble__button" :class="{ 'is-active': isActive.heading({ level: 2 }) }"
-          @click="commands.heading({ level: 2 })">H2</button>
+          @click="commands.heading({ level: 2 })">
+          H2
+        </button>
 
         <button class="menububble__button" :class="{ 'is-active': isActive.heading({ level: 3 }) }"
-          @click="commands.heading({ level: 3 })">H3</button>
+          @click="commands.heading({ level: 3 })">
+          H3
+        </button>
 
         <form class="menububble__form" v-if="linkMenuIsActive" @submit.prevent="setLinkUrl(commands.link, linkUrl)">
           <input class="menububble__input" type="text" v-model="linkUrl" placeholder="https://" ref="linkInput"
@@ -382,10 +392,6 @@
       color: #fff;
       height: auto !important;
       margin: 0 !important;
-    }
-
-    a {
-      text-decoration: underline;
     }
   }
 </style>

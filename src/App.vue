@@ -310,6 +310,10 @@
       padding-left: 1rem;
     }
 
+    ul>li {
+      list-style-type: initial;
+    }
+
     li>ol,
     li>p,
     li>ul {
