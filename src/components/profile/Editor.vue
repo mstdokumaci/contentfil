@@ -18,7 +18,7 @@
         </li>
       </ul>
     </div>
-    <editor-menu-bubble :editor="editor" :keep-in-bounds="false" v-slot="{ commands, isActive, menu }">
+    <editor-menu-bubble :editor="editor" :keep-in-bounds="false" v-slot="{ commands, isActive, getMarkAttrs, menu }">
       <div class="menububble" :class="{ 'is-active': menu.isActive }"
         :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`">
         <button class="menububble__button" :class="{ 'is-active': isActive.bold() }" @click="commands.bold">B</button>
@@ -37,6 +37,23 @@
 
         <button class="menububble__button" :class="{ 'is-active': isActive.heading({ level: 3 }) }"
           @click="commands.heading({ level: 3 })">H3</button>
+
+        <form class="menububble__form" v-if="linkMenuIsActive" @submit.prevent="setLinkUrl(commands.link, linkUrl)">
+          <input class="menububble__input" type="text" v-model="linkUrl" placeholder="https://" ref="linkInput"
+            @keydown.esc="hideLinkMenu" />
+          <button class="menububble__button" @click="setLinkUrl(commands.link, linkUrl)" type="button">
+            <i class="material-icons tiny">done</i>
+          </button>
+          <button class="menububble__button" @click="setLinkUrl(commands.link, null)" type="button">
+            <i class="material-icons tiny">close</i>
+          </button>
+        </form>
+        <template v-else>
+          <button class="menububble__button" @click="showLinkMenu(getMarkAttrs('link'))"
+            :class="{ 'is-active': isActive.link() }">
+            <span>{{ isActive.link() ? 'Update Link' : 'Add Link'}}</span>
+          </button>
+        </template>
       </div>
     </editor-menu-bubble>
 
@@ -103,7 +120,9 @@
         }),
         updating: false,
         published: true,
-        publishDate: 'Never'
+        publishDate: 'Never',
+        linkUrl: null,
+        linkMenuIsActive: false
       }
     },
     props: ['id'],
@@ -122,6 +141,21 @@
       },
       deleteDraft() {
         this.$client.get('draft').emit('delete', this.id)
+      },
+      showLinkMenu(attrs) {
+        this.linkUrl = attrs.href
+        this.linkMenuIsActive = true
+        this.$nextTick(() => {
+          this.$refs.linkInput.focus()
+        })
+      },
+      hideLinkMenu() {
+        this.linkUrl = null
+        this.linkMenuIsActive = false
+      },
+      setLinkUrl(command, url) {
+        command({ href: url })
+        this.hideLinkMenu()
       }
     },
     created() {
@@ -344,6 +378,12 @@
       border: none;
       background: rgba(0, 0, 0, 0);
       color: #fff;
+      height: auto !important;
+      margin: 0 !important;
+    }
+
+    a {
+      text-decoration: underline;
     }
   }
 </style>
