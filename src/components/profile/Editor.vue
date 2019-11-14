@@ -76,12 +76,14 @@
     Bold,
     Code,
     Italic,
-    Link,
     Strike,
     Underline,
     History,
-    Placeholder
+    Placeholder,
+    TrailingNode,
+    Image
   } from 'tiptap-extensions'
+  import ULink from './editor/ULink'
 
   let subscription
 
@@ -106,14 +108,18 @@
             new Bold(),
             new Code(),
             new Italic(),
-            new Link(),
+            new ULink(),
             new Strike(),
             new Underline(),
             new History(),
             new Placeholder({
-              emptyClass: 'is-empty',
-              emptyNodeText: 'Write something',
-            })
+              emptyNodeText: 'Write something'
+            }),
+            new TrailingNode({
+              node: 'paragraph',
+              notAfter: ['paragraph'],
+            }),
+            new Image()
           ],
           content: "",
           onUpdate: ({ getHTML }) => this.onChange(getHTML())
