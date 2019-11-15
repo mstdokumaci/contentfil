@@ -21,37 +21,10 @@
     <editor-menu-bubble :editor="editor" :keep-in-bounds="false" v-slot="{ commands, isActive, getMarkAttrs, menu }">
       <div class="menububble" :class="{ 'is-active': menu.isActive }"
         :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`">
-        <button class="menububble__button" :class="{ 'is-active': isActive.bold() }" @click="commands.bold">
-          B
-        </button>
-
-        <button class="menububble__button" :class="{ 'is-active': isActive.italic() }" @click="commands.italic">
-          I
-        </button>
-
-        <button class="menububble__button" :class="{ 'is-active': isActive.code() }" @click="commands.code">
-          &lt;&gt;
-        </button>
-
-        <button class="menububble__button" :class="{ 'is-active': isActive.heading({ level: 1 }) }"
-          @click="commands.heading({ level: 1 })">
-          H1
-        </button>
-
-        <button class="menububble__button" :class="{ 'is-active': isActive.heading({ level: 2 }) }"
-          @click="commands.heading({ level: 2 })">
-          H2
-        </button>
-
-        <button class="menububble__button" :class="{ 'is-active': isActive.heading({ level: 3 }) }"
-          @click="commands.heading({ level: 3 })">
-          H3
-        </button>
-
         <form class="menububble__form" v-if="linkMenuIsActive" @submit.prevent="setLinkUrl(commands.link, linkUrl)">
           <input class="menububble__input" type="text" v-model="linkUrl" placeholder="https://" ref="linkInput"
             @keydown.esc="hideLinkMenu" />
-          <button class="menububble__button" @click="setLinkUrl(commands.link, linkUrl)" type="button">
+          <button class="menububble__button">
             <i class="material-icons tiny">done</i>
           </button>
           <button class="menububble__button" @click="setLinkUrl(commands.link, null)" type="button">
@@ -59,9 +32,40 @@
           </button>
         </form>
         <template v-else>
+          <button class="menububble__button" :class="{ 'is-active': isActive.bold() }" @click="commands.bold">
+            B
+          </button>
+
+          <button class="menububble__button" :class="{ 'is-active': isActive.italic() }" @click="commands.italic">
+            I
+          </button>
+
+          <button class="menububble__button" :class="{ 'is-active': isActive.code() }" @click="commands.code">
+            <i class="material-icons tiny">code</i>
+          </button>
+
+          <button class="menububble__button" :class="{ 'is-active': isActive.blockquote() }"
+            @click="commands.blockquote">
+            <i class="material-icons tiny">format_quote</i>
+          </button>
+
+          <button class="menububble__button" :class="{ 'is-active': isActive.heading({ level: 1 }) }"
+            @click="commands.heading({ level: 1 })">
+            H1
+          </button>
+
+          <button class="menububble__button" :class="{ 'is-active': isActive.heading({ level: 2 }) }"
+            @click="commands.heading({ level: 2 })">
+            H2
+          </button>
+
+          <button class="menububble__button" :class="{ 'is-active': isActive.heading({ level: 3 }) }"
+            @click="commands.heading({ level: 3 })">
+            H3
+          </button>
           <button class="menububble__button" @click="showLinkMenu(getMarkAttrs('link'))"
             :class="{ 'is-active': isActive.link() }">
-            <span>{{ isActive.link() ? 'Update Link' : 'Add Link'}}</span>
+            <i class="material-icons tiny">link</i>
           </button>
         </template>
       </div>
@@ -89,7 +93,8 @@
     History,
     Placeholder,
     TrailingNode,
-    Image
+    Image,
+    Focus
   } from 'tiptap-extensions'
   import ULink from './editor/ULink'
 
@@ -125,7 +130,11 @@
               node: 'paragraph',
               notAfter: ['paragraph'],
             }),
-            new Image()
+            new Image(),
+            new Focus({
+              className: 'has-focus',
+              nested: true
+            })
           ],
           content: "",
           onUpdate: ({ getHTML }) => this.onChange(getHTML())
@@ -392,6 +401,10 @@
       color: #fff;
       height: auto !important;
       margin: 0 !important;
+    }
+
+    img.has-focus {
+      border: 1px dashed;
     }
   }
 </style>
