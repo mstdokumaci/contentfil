@@ -97,6 +97,8 @@
     Focus
   } from 'tiptap-extensions'
   import ULink from './editor/ULink'
+  import Doc from './editor/Doc'
+  import Title from './editor/Title'
 
   let subscription
 
@@ -124,7 +126,13 @@
             new Underline(),
             new History(),
             new Placeholder({
-              emptyNodeText: 'Write something'
+              showOnlyCurrent: false,
+              emptyNodeText: node => {
+                if (node.type.name === 'title') {
+                  return 'Give me a name'
+                }
+                return 'Write something'
+              }
             }),
             new TrailingNode({
               node: 'paragraph',
@@ -134,7 +142,9 @@
             new Focus({
               className: 'has-focus',
               nested: true
-            })
+            }),
+            new Doc(),
+            new Title()
           ],
           content: "",
           onUpdate: ({ getHTML }) => this.onChange(getHTML())
@@ -405,6 +415,16 @@
 
     img.has-focus {
       border: 1px dashed;
+    }
+
+    .is-empty:nth-child(1)::before,
+    .is-empty:nth-child(2)::before {
+      content: attr(data-empty-text);
+      float: left;
+      color: #aaa;
+      pointer-events: none;
+      height: 0;
+      font-style: italic;
     }
   }
 </style>
