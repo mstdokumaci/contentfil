@@ -7,7 +7,8 @@ export default class ULink extends Link {
       {
         parseDOM: [
           {
-            tag: 'a[href] u',
+            tag: 'a[href]',
+            contentElement: 'u',
             getAttrs: dom => ({
               href: dom.getAttribute('href'),
             }),

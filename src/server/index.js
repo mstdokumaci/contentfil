@@ -9,8 +9,8 @@ const {
 
 const anyTagOpen = /<\w[^>]*>/g
 const anyTagClose = /<\/[^>]*>/g
-const safeTagOpen = /^<(h1|h2|p|img|u|ul|ol|li)(( (src|href)="([^"]+)")*)>$/
-const safeTagClose = /^<\/(h1|h2|p|img|u|ul|ol|li)>$/
+const safeTagOpen = /^<(h1|h2|p|img|u|ul|ol|li|a)(( (src|href|rel)="([^"]+)")*)>$/
+const safeTagClose = /^<\/(h1|h2|p|img|u|ul|ol|li|a)>$/
 const unsafeAttribute = /^javascript:/
 
 const isSafeHTML = (content, value) => {
