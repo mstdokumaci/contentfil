@@ -7,6 +7,37 @@ const {
   countVote
 } = require('./stats')
 
+const anyTagOpen = /<\w[^>]*>/g
+const anyTagClose = /<\/[^>]*>/g
+const safeTagOpen = /^<(h1|h2|p|img|u|ul|ol|li)(( (src|href)="([^"]+)")*)>$/
+const safeTagClose = /^<\/(h1|h2|p|img|u|ul|ol|li)>$/
+const unsafeAttribute = /^javascript:/
+
+const isSafeHTML = (content, value) => {
+  let openMatch = anyTagOpen.exec(value)
+  while (openMatch) {
+    const groups = safeTagOpen.exec(openMatch[0])
+    if (
+      !groups || (
+        groups[5] && unsafeAttribute.test(groups[5])
+      )
+    ) {
+      return false
+    }
+    openMatch = anyTagOpen.exec(value)
+  }
+
+  let closeMatch = anyTagClose.exec(value)
+  while (closeMatch) {
+    if (!safeTagClose.test(closeMatch[0])) {
+      return false
+    }
+    closeMatch = anyTagClose.exec(value)
+  }
+
+  return true
+}
+
 const isRealUser = item => {
   const userType = item.root().get(['user', 'type'])
   return userType && userType.compute() === 'real'
@@ -90,7 +121,8 @@ createPersist(
           path: ['route']
         },
         {
-          path: ['draft', '*', 'content']
+          path: ['draft', '*', 'content'],
+          authorize: isSafeHTML
         },
         {
           path: ['published', '*', 'viewed'],
