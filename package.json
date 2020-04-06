@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "nodemailer": "^6.3.1",
-    "stx": "^0.6.13",
+    "stx": "^0.6.14",
     "stx-persist-rocksdb": "0.0.6",
     "tiptap": "^1.26.3",
     "tiptap-extensions": "^1.28.3",
@@ -34,7 +34,7 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-replace": "^2.2.0",
     "rollup-plugin-serve": "^1.0.1",
-    "rollup-plugin-uglify": "^6.0.3",
+    "rollup-plugin-uglify": "^6.0.4",
     "rollup-plugin-vue": "^5.0.1",
     "standard": "^14.0.2",
     "vue-template-compiler": "^2.6.10"
