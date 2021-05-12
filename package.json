@@ -13,7 +13,7 @@
     "test": "standard --fix"
   },
   "dependencies": {
-    "nodemailer": "^6.3.1",
+    "nodemailer": "^6.4.16",
     "stx": "^0.6.14",
     "stx-persist-rocksdb": "0.0.6",
     "tiptap": "^1.26.3",
